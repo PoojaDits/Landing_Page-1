@@ -8,6 +8,8 @@ import Cart from "./components/Cart";
 import Footer from "./components/Footer";
 
 import { Deals } from "./components/Deals";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 
 import "./App.css";
 
@@ -124,6 +126,9 @@ const App = () => {
    element={
    <Deals addToCart={addToCart}
     />} />
+
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         
         <Route
           path="*"
