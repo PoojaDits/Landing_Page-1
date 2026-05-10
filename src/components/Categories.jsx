@@ -28,7 +28,7 @@ const Categories = ({ setSelectedCategory }) => {
           <div
             key={cat.name}
             className="category-card"
-            style={{ backgroundColor: cat.color }}
+            style={{ backgroundColor: cat.color, cursor: "pointer" }}
             onClick={() => handleCategoryClick(cat.name)}
           >
             <span className="category-emoji">{cat.emoji}</span>

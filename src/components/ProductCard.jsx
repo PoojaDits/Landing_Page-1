@@ -1,12 +1,14 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const ProductCard = ({ product, addToCart }) => {
+  const navigate = useNavigate();
   const renderStars = (rating) => {
     return "★".repeat(Math.floor(rating)) + "☆".repeat(5 - Math.floor(rating));
   };
 
   return (
-    <div className="product-card">
+    <div className="product-card" onClick={() => navigate(`/product/${product.id}`)} style={{ cursor: "pointer" }}>
       <div className="product-image-wrapper">
         <span>{product.emoji}</span>
         {product.badge && <span className="badge">{product.badge}</span>}
@@ -27,7 +29,10 @@ const ProductCard = ({ product, addToCart }) => {
           </div>
           <button
             className="add-to-cart-btn"
-            onClick={() => addToCart(product)}
+            onClick={(e) => {
+              e.stopPropagation();
+              addToCart(product);
+            }}
           >
             + Add
           </button>

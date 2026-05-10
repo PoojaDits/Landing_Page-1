@@ -10,9 +10,13 @@ import Footer from "./components/Footer";
 import { Deals } from "./components/Deals";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import ProductDetail from "./pages/ProductDetail";
+import PrivateRoute from "./components/PrivateRoute";
 
 import "./App.css";
 
+// Clear token on hard refresh for demonstration purposes
+localStorage.removeItem('myToken');
 
 const ProductsPage = ({ selectedCategory, setSelectedCategory, addToCart }) => {
   const { category } = useParams();
@@ -88,12 +92,14 @@ const App = () => {
         <Route
           path="/"
           element={           
-            <>
-              <Hero />
-              <Categories
-                setSelectedCategory={setSelectedCategory}
-              />
-            </>
+            <PrivateRoute>
+              <>
+                <Hero />
+                <Categories
+                  setSelectedCategory={setSelectedCategory}
+                />
+              </>
+            </PrivateRoute>
           }
         />
 
@@ -101,11 +107,13 @@ const App = () => {
         <Route
           path="/products"
           element={
-            <ProductsPage
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-              addToCart={addToCart}
-            />
+            <PrivateRoute>
+              <ProductsPage
+                selectedCategory={selectedCategory}
+                setSelectedCategory={setSelectedCategory}
+                addToCart={addToCart}
+              />
+            </PrivateRoute>
           }
         />
 
@@ -113,20 +121,25 @@ const App = () => {
         <Route
           path="/products/:category"
           element={
-            <ProductsPage
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-              addToCart={addToCart}
-            />
+            <PrivateRoute>
+              <ProductsPage
+                selectedCategory={selectedCategory}
+                setSelectedCategory={setSelectedCategory}
+                addToCart={addToCart}
+              />
+            </PrivateRoute>
           }
         />
      
   <Route 
   path="/Deals"
    element={
-   <Deals addToCart={addToCart}
-    />} />
+    <PrivateRoute>
+      <Deals addToCart={addToCart} />
+    </PrivateRoute>
+    } />
 
+        <Route path="/product/:id" element={<PrivateRoute><ProductDetail addToCart={addToCart} /></PrivateRoute>} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         
