@@ -1,34 +1,20 @@
 import ContactForm from '../components/ContactForm';
-import { FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
-import '../pages/Contact.css';
 
 const Contact = () => {
   return (
-    <div className="contact-page">
-      <div className="contact-container">
-        <div className="contact-header">
-          <h1>Get In Touch</h1>
-          <p>We're here to help! Send us a message and we'll get back to you shortly.</p>
-        </div>
-
-        <ContactForm />
-
-        <div className="contact-info-row">
-          {/* <div className="info-item">
-            <FaPhone className="info-icon" />
-            <span>+1 (555) 123-4567</span>
+    <main className="py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
+          <div className="text-center mb-8">
+            <p className="text-sm font-medium text-[#e94560]">Get In Touch</p>
+            <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900">Contact Us</h1>
+            <p className="mt-3 text-sm text-gray-600">We're here to help! Send us a message and we'll get back to you shortly.</p>
           </div>
-          <div className="info-item">
-            <FaEnvelope className="info-icon" />
-            <span>support@shopwave.com</span>
-          </div>
-          <div className="info-item">
-            <FaMapMarkerAlt className="info-icon" />
-            <span>New York, NY</span>
-          </div> */}
+
+          <ContactForm />
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

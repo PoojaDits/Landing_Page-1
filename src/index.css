@@ -4,6 +4,10 @@
   line-height: 1.5;
 }
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 
 html, 
 body, 
@@ -13,6 +17,8 @@ body,
   padding: 0;
   display: block; 
   overflow-x: hidden; 
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+
 }
 
 * {

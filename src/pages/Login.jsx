@@ -3,58 +3,52 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Button from '../components/Button';
 import Input from '../components/Input';
-import './Login.css';
 
 const API_LINK = import.meta.env.AUTH_API;
 
 const Login = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [mainError, setMainError] = useState('');
-
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem('myToken')) {
-      navigate('/');
-    }
+    if (localStorage.getItem('myToken')) navigate('/');
   }, [navigate]);
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
+    setFormData((p) => ({ ...p, [name]: value }));
+    if (errors[name]) setErrors((p) => ({ ...p, [name]: '' }));
   };
 
+  const validateField = (name, value) => {
+    if (name === 'email') {
+      if (!value) return 'Email is required';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Enter a valid email';
+      return '';
+    }
+    if (name === 'password') {
+      if (!value) return 'Password is required';
+      if (value.length < 6) return 'Password must be at least 6 characters';
+      return '';
+    }
+    return '';
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    const err = validateField(name, value);
+    setErrors((p) => ({ ...p, [name]: err }));
+  };
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
+    if (!formData.email) newErrors.email = 'Email is required';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Enter a valid email';
+    if (!formData.password) newErrors.password = 'Password is required';
+    else if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -62,36 +56,24 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMainError('');
-
     if (!validateForm()) return;
-
+    setLoading(true);
     try {
-
       const demoUser = localStorage.getItem('demoUser');
       if (demoUser) {
         const userData = JSON.parse(demoUser);
         if (userData.email === formData.email && userData.password === formData.password) {
-
           const mockToken = 'demo-token-' + Date.now();
           localStorage.setItem('myToken', mockToken);
-
-          console.log('Demo login successful!\nToken:', mockToken, '\nUser Info:', {
-            firstName: userData.firstName,
-            lastName: userData.lastName,
-            email: userData.email
-          });
-
           localStorage.setItem('myUser', JSON.stringify({
             firstName: userData.firstName,
             lastName: userData.lastName,
             email: userData.email
           }));
-
           navigate('/');
           return;
         }
       }
-
 
       const response = await axios.post(`${API_LINK}/auth/login`, {
         username: formData.email,
@@ -102,72 +84,100 @@ const Login = () => {
       const { accessToken, ...userData } = response.data;
       localStorage.setItem('myToken', accessToken);
       localStorage.setItem('myUser', JSON.stringify(userData));
-
-
-      const safeUserData = { ...userData };
-      if (safeUserData.password) safeUserData.password = '********';
-      console.log('Login successful!\nToken:', accessToken, '\nUser Info:', safeUserData);
-
       navigate('/');
-    } catch (error) {
-      console.error('Login error:', error);
-      console.log('API URL:', `${API_LINK}/auth/login`);
-      console.log('Request data:', {
-        username: formData.email,
-        password: formData.password,
-        expiresInMins: 60,
-      });
-      const errorMessage = error.response?.data?.message || 'User does not exist or invalid credentials';
-      setMainError(errorMessage);
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Invalid credentials or user not found';
+      setMainError(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
-  return (
-    <div className="login-page">
-      <div className="login-container">
-        <h1>Sign In</h1>
-        <form onSubmit={handleSubmit} className="login-form" noValidate>
-          {mainError && <div className="error-message-box">{mainError}</div>}
+  const fillDemo = () => {
+    const demo = JSON.parse(localStorage.getItem('demoUser') || '{}');
+    if (demo.email && demo.password) setFormData({ email: demo.email, password: demo.password });
+    else {
+      // optional demo fallback
+      setFormData({ email: 'demo@example.com', password: 'demopass' });
+    }
+  };
 
-          <div className="input-group">
+  const inputBase = 'w-full px-4 py-3 border-2 rounded-lg text-base bg-gray-100 focus:outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-200 transition';
+  const inputErr = 'border-red-500 bg-red-50';
+
+  return (
+    <main className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-[#0f2340] via-[#16213e] to-[#0b2544]">
+      <section className="relative w-full max-w-md bg-white rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.12)] p-10 sm:p-12">
+        <header className="mb-6 text-center">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800">Sign In</h1>
+          
+        </header>
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
+          {mainError && (
+            <div role="alert" className="text-[#b91c1c] bg-[#fee2e2] px-3 py-2 rounded-md text-sm text-center">
+              {mainError}
+            </div>
+          )}
+
+          <div className="flex flex-col gap-2">
+            <label htmlFor="email" className="text-sm font-medium text-gray-700">Email</label>
             <Input
+              id="email"
               type="email"
               name="email"
-              placeholder="Email"
+              placeholder="you@example.com"
               value={formData.email}
               onChange={handleChange}
-              autoComplete="off"
-              className={errors.email ? 'input-error' : ''}
+              onBlur={handleBlur}
+              autoComplete="email"
+              className={`${inputBase} ${errors.email ? inputErr : ''}`}
+              aria-invalid={errors.email ? 'true' : 'false'}
+              aria-describedby={errors.email ? 'email-error' : undefined}
             />
-            {errors.email && <span className="error-text">{errors.email}</span>}
+            {errors.email && <span id="email-error" className="text-red-500 text-sm ml-1">{errors.email}</span>}
           </div>
 
-          <div className="input-group">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="password" className="text-sm font-medium text-gray-700">Password</label>
             <Input
+              id="password"
               type="password"
               name="password"
-              placeholder="Password"
+              placeholder="••••••••"
               value={formData.password}
               onChange={handleChange}
-              autoComplete="new-password"
-              className={errors.password ? 'input-error' : ''}
+              onBlur={handleBlur}
+              autoComplete="current-password"
+              className={`${inputBase} ${errors.password ? inputErr : ''}`}
+              aria-invalid={errors.password ? 'true' : 'false'}
+              aria-describedby={errors.password ? 'password-error' : undefined}
             />
-            {errors.password && <span className="error-text">{errors.password}</span>}
+            {errors.password && <span id="password-error" className="text-red-500 text-sm ml-1">{errors.password}</span>}
           </div>
 
-          <Button type="submit">Sign In</Button>
+          <div className="flex items-center justify-between gap-4">
+            <Button
+              type="submit"
+              className="flex-1 py-3 bg-gradient-to-br from-[#e94560] to-[#f093fb] text-white rounded-lg font-semibold shadow-md hover:-translate-y-0.5 transform transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
+              disabled={loading}
+            >
+              {loading ? 'Signing in...' : 'Sign In'}
+            </Button>
+
+            
+          </div>
         </form>
 
-        <div className="forgot-password-box">
-          <a href="#" className="forgot-password-link">Forgot Password?</a>
+        <div className="mt-5 text-center">
+          <a href="#" className="text-[#e94560] text-sm font-medium hover:underline">Forgot Password?</a>
         </div>
 
-
-        <p>
-          Don't have an account? <Link to="/signup">Sign up</Link>
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Don't have an account? <Link to="/signup" className="text-[#e94560] font-semibold hover:underline">Sign up</Link>
         </p>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 };
 
