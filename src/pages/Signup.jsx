@@ -5,87 +5,107 @@ import Button from '../components/Button';
 import Input from '../components/Input';
 import './Signup.css';
 
-const API_LINK = import.meta.env.AUTH_LINK;
+const API_LINK = import.meta.env.AUTH_API;
 
 const Signup = () => {
   const navigate = useNavigate();
-  const [inputs, setInputs] = useState({
+  const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
     password: '',
   });
+  const [errors, setErrors] = useState({});
+  const [mainError, setMainError] = useState('');
 
-  const [errs, setErrs] = useState({});
-
+  // Redirect if already logged in
   useEffect(() => {
     if (localStorage.getItem('myToken')) {
       navigate('/');
     }
   }, [navigate]);
 
+  // Handle input changes
   const handleChange = (e) => {
-    setInputs({
-      ...inputs,
-      [e.target.name]: e.target.value,
-    });
-    if (errs[e.target.name]) {
-      setErrs({ ...errs, [e.target.name]: '' });
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Clear errors when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
     }
   };
 
+  // Validate form
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = 'First Name is required';
+    } else if (!/^[A-Za-z ]+$/.test(formData.firstName)) {
+      newErrors.firstName = 'Only letters and spaces allowed';
+    }
+
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = 'Last Name is required';
+    } else if (!/^[A-Za-z ]+$/.test(formData.lastName)) {
+      newErrors.lastName = 'Only letters and spaces allowed';
+    }
+
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMainError('');
 
-    const newErrs = {};
-
-    if (inputs.firstName == '') {
-      newErrs.firstName = 'First Name is required';
-    } else if (!/^[A-Za-z ]+$/.test(inputs.firstName)) {
-      newErrs.firstName = 'Only letters and spaces allowed';
-    }
-
-    if (inputs.lastName == '') {
-      newErrs.lastName = 'Last Name is required';
-    } else if (!/^[A-Za-z ]+$/.test(inputs.lastName)) {
-      newErrs.lastName = 'Only letters and spaces allowed';
-    }
-
-    if (inputs.email == '') {
-      newErrs.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inputs.email)) {
-      newErrs.email = 'Please enter a valid email address';
-    }
-
-    if (inputs.password == '') {
-      newErrs.password = 'Password is required';
-    } else if (inputs.password.length < 6) {
-      newErrs.password = 'Password must be at least 6 characters';
-    }
-
-    // check if there are any errors
-    let count = 0;
-    for (let key in newErrs) {
-      count++;
-    }
-
-    if (count > 0) {
-      setErrs(newErrs);
-      return;
-    }
+    if (!validateForm()) return;
 
     try {
-      // save my user for login page
-      localStorage.setItem('myNewUser', JSON.stringify(inputs));
+      // Store form data temporarily
+      localStorage.setItem('myNewUser', JSON.stringify(formData));
 
-      const res = await axios.post(`${API_LINK}/users/add`, inputs);
-      const data = res.data;
-      console.log('Signup successful:', data);
 
-      // go to login
+
+      const response = await axios.post(`${API_LINK}/users/add`, formData);
+
+
+      // Since dummyjson doesn't persist new users for login,
+      // we'll store the credentials locally for demo purposes
+      localStorage.setItem('demoUser', JSON.stringify({
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName
+      }));
+
+      // alert(`Account created successfully! You can now login with:\n\nEmail: ${formData.email}\nPassword: ${formData.password}`);
+
       navigate('/login');
-    } catch (err) {
-      console.log('Error signing up:', err);
+    } catch (error) {
+      console.error('Signup error:', error);
+
+      const errorMessage = error.response?.data?.message || 'Signup failed. Please try again.';
+      setMainError(errorMessage);
     }
   };
 
@@ -94,53 +114,63 @@ const Signup = () => {
       <div className="signup-container">
         <h1>Sign Up</h1>
         <form onSubmit={handleSubmit} className="signup-form" noValidate>
+          {mainError && <div className="error-message-box">{mainError}</div>}
+
           <div className="input-group">
             <Input
               type="text"
               name="firstName"
               placeholder="First Name"
-              value={inputs.firstName}
+              value={formData.firstName}
               onChange={handleChange}
-              className={errs.firstName ? 'input-error' : ''}
+              autoComplete="off"
+              className={errors.firstName ? 'input-error' : ''}
             />
-            {errs.firstName && <span className="error-text">{errs.firstName}</span>}
+            {errors.firstName && <span className="error-text">{errors.firstName}</span>}
           </div>
+
           <div className="input-group">
             <Input
               type="text"
               name="lastName"
               placeholder="Last Name"
-              value={inputs.lastName}
+              value={formData.lastName}
               onChange={handleChange}
-              className={errs.lastName ? 'input-error' : ''}
+              autoComplete="off"
+              className={errors.lastName ? 'input-error' : ''}
             />
-            {errs.lastName && <span className="error-text">{errs.lastName}</span>}
+            {errors.lastName && <span className="error-text">{errors.lastName}</span>}
           </div>
+
           <div className="input-group">
             <Input
               type="email"
               name="email"
               placeholder="Email"
-              value={inputs.email}
+              value={formData.email}
               onChange={handleChange}
-              className={errs.email ? 'input-error' : ''}
+              autoComplete="off"
+              className={errors.email ? 'input-error' : ''}
             />
-            {errs.email && <span className="error-text">{errs.email}</span>}
+            {errors.email && <span className="error-text">{errors.email}</span>}
           </div>
+
           <div className="input-group">
             <Input
               type="password"
               name="password"
               placeholder="Password"
-              value={inputs.password}
+              value={formData.password}
               onChange={handleChange}
               autoComplete="new-password"
-              className={errs.password ? 'input-error' : ''}
+              className={errors.password ? 'input-error' : ''}
             />
-            {errs.password && <span className="error-text">{errs.password}</span>}
+            {errors.password && <span className="error-text">{errors.password}</span>}
           </div>
+
           <Button type="submit">Sign Up</Button>
         </form>
+
         <p>
           Already have an account? <Link to="/login">Sign in</Link>
         </p>

@@ -1,8 +1,19 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-const Navbar = ({ totalItems, toggleCart }) => {
+import { FaShoppingCart, FaUserCircle } from "react-icons/fa"
+
+
+
+const Navbar = ({ totalItems, toggleCart, isLoggedIn, user }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem('myToken');
+    localStorage.removeItem('myUser');
+    window.location.href = '/login';
+  };
 
   return (
     <>
@@ -39,18 +50,39 @@ const Navbar = ({ totalItems, toggleCart }) => {
           </li>
 
           <li>
-            <a href="#contact" onClick={() => setMenuOpen(false)}>
+            <Link to="/contact" onClick={() => setMenuOpen(false)}>
               Contact
-            </a>
+            </Link>
           </li>
         </ul>
 
         <div className="navbar-actions">
-          <Link to="/login" className="login-nav-btn" onClick={() => setMenuOpen(false)}>
-            Login
-          </Link>
+          {isLoggedIn && (
+            <div className="profile-container">
+              <button 
+                className="profile-btn" 
+                onClick={() => setProfileOpen(!profileOpen)}
+                aria-label="Profile"
+              >
+                <FaUserCircle size={24} />
+              </button>
+              
+              {profileOpen && (
+                <div className="profile-dropdown">
+                  <div className="profile-info">
+                    <p className="profile-name">{user?.firstName} {user?.lastName}</p>
+                    <p className="profile-email">{user?.email}</p>
+                  </div>
+                  <hr />
+                  <button className="dropdown-logout-btn" onClick={handleLogout}>
+                    Signout
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
           <button className="cart-btn" onClick={toggleCart}>
-            🛒 Cart
+          <FaShoppingCart color="white" size={24} />
             {totalItems > 0 && (
               <span className="cart-count">{totalItems}</span>
             )}

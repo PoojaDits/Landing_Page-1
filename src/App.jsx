@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Routes, Route, useParams } from "react-router-dom";
+import { Routes, Route, useParams, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Categories from "./components/Categories";
@@ -10,13 +10,15 @@ import Footer from "./components/Footer";
 import { Deals } from "./components/Deals";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Contact from "./pages/Contact";
 import ProductDetail from "./pages/ProductDetail";
 import PrivateRoute from "./components/PrivateRoute";
 
 import "./App.css";
+import { Toaster } from "react-hot-toast";
 
-// Clear token on hard refresh for demonstration purposes
-localStorage.removeItem('myToken');
+
+// localStorage.removeItem('myToken');
 
 const ProductsPage = ({ selectedCategory, setSelectedCategory, addToCart }) => {
   const { category } = useParams();
@@ -40,6 +42,14 @@ const App = () => {
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('myToken'));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('myUser')) || null);
+  const location = useLocation();
+
+  React.useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem('myToken'));
+    setUser(JSON.parse(localStorage.getItem('myUser')) || null);
+  }, [location]);
 
  
   const addToCart = (product) => {
@@ -82,9 +92,13 @@ const App = () => {
 
   return (
     <div className="app">
+      <Toaster position="top-center" reverseOrder={false} />
+
       <Navbar
         totalItems={totalItems}
         toggleCart={() => setIsCartOpen(!isCartOpen)}
+        isLoggedIn={isLoggedIn}
+        user={user}
       />
 
       <Routes>
@@ -142,6 +156,7 @@ const App = () => {
         <Route path="/product/:id" element={<PrivateRoute><ProductDetail addToCart={addToCart} /></PrivateRoute>} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/contact" element={<PrivateRoute><Contact /></PrivateRoute>} />
         
         <Route
           path="*"
