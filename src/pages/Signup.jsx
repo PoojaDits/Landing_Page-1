@@ -4,7 +4,7 @@ import axios from 'axios';
 import Button from '../components/Button';
 import Input from '../components/Input';
 
-const API_LINK = import.meta.env.AUTH_API;
+const API_URL = 'https://dummyjson.com';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -24,38 +24,34 @@ const Signup = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((p) => ({ ...p, [name]: value }));
-    if (errors[name]) setErrors((p) => ({ ...p, [name]: '' }));
+    setFormData({ ...formData, [name]: value });
+    if (errors[name]) setErrors({ ...errors, [name]: '' });
   };
 
   const validateField = (name, value) => {
     if (name === 'firstName') {
       if (!value.trim()) return 'First Name is required';
       if (!/^[A-Za-z ]+$/.test(value)) return 'Only letters and spaces allowed';
-      return '';
     }
     if (name === 'lastName') {
       if (!value.trim()) return 'Last Name is required';
       if (!/^[A-Za-z ]+$/.test(value)) return 'Only letters and spaces allowed';
-      return '';
     }
     if (name === 'email') {
       if (!value) return 'Email is required';
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Enter a valid email';
-      return '';
     }
     if (name === 'password') {
       if (!value) return 'Password is required';
       if (value.length < 6) return 'Password must be at least 6 characters';
-      return '';
     }
     return '';
   };
 
   const handleBlur = (e) => {
     const { name, value } = e.target;
-    const err = validateField(name, value);
-    setErrors((p) => ({ ...p, [name]: err }));
+    const error = validateField(name, value);
+    setErrors({ ...errors, [name]: error });
   };
 
   const validateForm = () => {
@@ -85,7 +81,7 @@ const Signup = () => {
         lastName: formData.lastName,
       }));
 
-      await axios.post(`${API_LINK}/users/add`, formData);
+      await axios.post(`${API_URL}/users/add`, formData);
       navigate('/login');
     } catch (err) {
       const msg = err.response?.data?.message || 'Signup failed. Please try again.';

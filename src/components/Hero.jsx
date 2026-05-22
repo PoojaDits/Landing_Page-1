@@ -4,42 +4,55 @@ const Hero = () => {
   return (
     <section
       id="home"
-      className="relative overflow-hidden bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] text-white py-20 px-6"
+      className="relative overflow-hidden bg-[#0a0f1d] text-white py-24 sm:py-32 px-6"
     >
+      
+      <div className="absolute inset-0 bg-grid-pattern opacity-60 pointer-events-none" />
       <div
         aria-hidden
-        className="pointer-events-none absolute -left-20 top-6 w-[420px] h-[420px] rounded-[48%_52%_46%_54%] transform -rotate-15"
+        className="pointer-events-none absolute -left-20 top-10 w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] rounded-full bg-gradient-to-tr from-[#e94560]/30 to-purple-600/20 mix-blend-screen animate-float-slow"
         style={{
-          background:
-            'radial-gradient(circle at 30% 30%, rgba(73,213,244,0.35), transparent 25%), radial-gradient(circle at 60% 60%, rgba(249,92,102,0.28), transparent 18%), radial-gradient(circle at 20% 80%, rgba(255,255,255,0.18), transparent 22%)',
+          filter: "blur(90px)",
         }}
       />
 
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-20 bottom-0 w-[420px] h-[420px] rounded-full"
+        className="pointer-events-none absolute -right-20 bottom-10 w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] rounded-full bg-gradient-to-br from-cyan-500/25 to-blue-600/25 mix-blend-screen animate-float-delayed"
         style={{
-          background:
-            'radial-gradient(circle at 20% 25%, rgba(255,255,255,0.22), transparent 18%), radial-gradient(circle at 60% 45%, rgba(233,69,96,0.18), transparent 20%), radial-gradient(circle at 80% 75%, rgba(255,255,255,0.18), transparent 22%)',
+          filter: "blur(90px)",
         }}
       />
 
-      <div className="relative max-w-5xl mx-auto text-center">
-        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold leading-tight">
-          Discover <span className="text-pink-400">Amazing</span> Products
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-1/3 top-1/4 w-[250px] sm:w-[350px] h-[250px] sm:h-[350px] rounded-full bg-[#e94560]/10 mix-blend-screen animate-pulse"
+        style={{
+          filter: "blur(120px)",
+          animationDuration: "8s",
+        }}
+      />
+
+      <div className="relative max-w-5xl mx-auto text-center z-10">
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight">
+          Discover{" "}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e94560] to-[#ff7e95] drop-shadow-[0_2px_10px_rgba(233,69,96,0.3)]">
+            Amazing
+          </span>{" "}
+          Products
         </h1>
 
-        <p className="mt-4 text-sm sm:text-base text-gray-200 max-w-2xl mx-auto">
+        <p className="mt-6 text-base sm:text-lg lg:text-xl text-gray-300 max-w-2xl mx-auto font-light leading-relaxed">
           Shop the latest trends with unbeatable prices and fast delivery right to your door.
         </p>
 
-        <div className="mt-8">
+        <div className="mt-10">
           <button
             onClick={() => document.getElementById("products")?.scrollIntoView({ behavior: "smooth" })}
-            className="inline-flex items-center gap-3 bg-gradient-to-br from-[#e94560] to-[#d63a52]  px-6 py-3 rounded-full text-white font-semibold shadow-lg transform transition active:scale-95"
+            className="inline-flex items-center gap-3 bg-gradient-to-r from-[#e94560] to-[#f85c76] px-8 py-4 rounded-full text-white font-bold text-sm sm:text-base shadow-[0_4px_20px_rgba(233,69,96,0.4)] hover:shadow-[0_4px_30px_rgba(233,69,96,0.65)] hover:-translate-y-0.5 active:scale-95 transform transition duration-300"
           >
             Shop Now
-            <span aria-hidden className="text-xl">→</span>
+            <span aria-hidden className="text-xl transition-transform duration-300 group-hover:translate-x-1">→</span>
           </button>
         </div>
       </div>

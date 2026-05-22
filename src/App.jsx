@@ -14,11 +14,7 @@ import Contact from "./pages/Contact";
 import ProductDetail from "./pages/ProductDetail";
 import PrivateRoute from "./components/PrivateRoute";
 
-import "./App.css";
 import { Toaster } from "react-hot-toast";
-
-
-
 
 const ProductsPage = ({ selectedCategory, setSelectedCategory, addToCart }) => {
   const { category } = useParams();
@@ -51,47 +47,35 @@ const App = () => {
     setUser(JSON.parse(localStorage.getItem('myUser')) || null);
   }, [location]);
 
- 
   const addToCart = (product) => {
-    setCartItems((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-      return [...prev, { ...product, quantity: 1 }];
-    });
+    const existing = cartItems.find((item) => item.id === product.id);
+    if (existing) {
+      setCartItems(cartItems.map((item) =>
+        item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+      ));
+    } else {
+      setCartItems([...cartItems, { ...product, quantity: 1 }]);
+    }
   };
-
 
   const removeFromCart = (id) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
+    setCartItems(cartItems.filter((item) => item.id !== id));
   };
 
- 
   const updateQuantity = (id, quantity) => {
     if (quantity < 1) {
       removeFromCart(id);
       return;
     }
-
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, quantity } : item
-      )
-    );
+    setCartItems(cartItems.map((item) =>
+      item.id === id ? { ...item, quantity } : item
+    ));
   };
 
-  const totalItems = cartItems.reduce(
-    (sum, item) => sum + item.quantity,
-    0
-  );
+  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="app">
+    <div className="flex flex-col min-h-screen">
       <Toaster position="top-center" reverseOrder={false} />
 
       <Navbar
@@ -101,75 +85,72 @@ const App = () => {
         user={user}
       />
 
-      <Routes>
-       
-        <Route
-          path="/"
-          element={           
-            <PrivateRoute>
-              <>
-                <Hero />
-                <Categories
+      <main className="flex-1 flex flex-col">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <>
+                  <Hero />
+                  <Categories setSelectedCategory={setSelectedCategory} />
+                </>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/products"
+            element={
+              <PrivateRoute>
+                <ProductsPage
+                  selectedCategory={selectedCategory}
                   setSelectedCategory={setSelectedCategory}
+                  addToCart={addToCart}
                 />
-              </>
-            </PrivateRoute>
-          }
-        />
+              </PrivateRoute>
+            }
+          />
 
-        
-        <Route
-          path="/products"
-          element={
-            <PrivateRoute>
-              <ProductsPage
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-                addToCart={addToCart}
-              />
-            </PrivateRoute>
-          }
-        />
+          <Route
+            path="/products/:category"
+            element={
+              <PrivateRoute>
+                <ProductsPage
+                  selectedCategory={selectedCategory}
+                  setSelectedCategory={setSelectedCategory}
+                  addToCart={addToCart}
+                />
+              </PrivateRoute>
+            }
+          />
 
-        
-        <Route
-          path="/products/:category"
-          element={
-            <PrivateRoute>
-              <ProductsPage
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-                addToCart={addToCart}
-              />
-            </PrivateRoute>
-          }
-        />
-     
-  <Route 
-  path="/Deals"
-   element={
-    <PrivateRoute>
-      <Deals addToCart={addToCart} />
-    </PrivateRoute>
-    } />
+          <Route
+            path="/Deals"
+            element={
+              <PrivateRoute>
+                <Deals addToCart={addToCart} />
+              </PrivateRoute>
+            }
+          />
 
-        <Route path="/product/:id" element={<PrivateRoute><ProductDetail addToCart={addToCart} /></PrivateRoute>} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/contact" element={<PrivateRoute><Contact /></PrivateRoute>} />
-        
-        <Route
-          path="*"
-          element={
-            <div style={{ padding: "40px", textAlign: "center" }}>
-              <h2>404 - Page Not Found</h2>
-              <p>This page doesn’t exist.</p>
-            </div>
-          }
-        />
-      </Routes>
+          <Route path="/product/:id" element={<PrivateRoute><ProductDetail addToCart={addToCart} /></PrivateRoute>} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/contact" element={<PrivateRoute><Contact /></PrivateRoute>} />
 
-     
+          <Route
+            path="*"
+            element={
+              <div style={{ padding: "40px", textAlign: "center" }}>
+                <h2>404 - Page Not Found</h2>
+                <p>This page doesn't exist.</p>
+              </div>
+            }
+          />
+        </Routes>
+      </main>
+
       {isCartOpen && (
         <Cart
           cartItems={cartItems}

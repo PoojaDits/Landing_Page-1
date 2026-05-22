@@ -2,13 +2,8 @@ import React from 'react'
 
 export const Deals = () => {
   return (
-    <h1 style={{ 
-  padding: "40px", 
-  marginTop: "80px",   
-  textAlign: "center",
-  color: "black"
-}}>
-🔥 Deals</h1>
+    <h1 className="p-10 mt-20 text-center text-white">
+      🔥 Deals</h1>
 
   );
 }

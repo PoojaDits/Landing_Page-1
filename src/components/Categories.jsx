@@ -2,12 +2,12 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const categoriesData = [
-  { name: "Electronics", emoji: "📱", color: "#ff6b6b" },
-  { name: "Footwear", emoji: "👟", color: "#4ecdc4" },
-  { name: "Accessories", emoji: "🎒", color: "#ffe66d" },
-  { name: "Kitchen", emoji: "☕", color: "#a8e6cf" },
-  { name: "Sports", emoji: "⚽", color: "#ff8b94" },
-  { name: "All", emoji: "🛍️", color: "#c9b1ff" },
+  { name: "Electronics", emoji: "📱", color: "bg-[#ff6b6b]" },
+  { name: "Footwear", emoji: "👟", color: "bg-[#4ecdc4]" },
+  { name: "Accessories", emoji: "🎒", color: "bg-[#ffe66d]" },
+  { name: "Kitchen", emoji: "☕", color: "bg-[#a8e6cf]" },
+  { name: "Sports", emoji: "⚽", color: "bg-[#ff8b94]" },
+  { name: "All", emoji: "🛍️", color: "bg-[#c9b1ff]" },
 ];
 
 const Categories = ({ setSelectedCategory }) => {
@@ -19,20 +19,18 @@ const Categories = ({ setSelectedCategory }) => {
   };
 
   return (
-    <section className="categories-section">
-      <h2 className="section-title">Shop by Category</h2>
-      
+    <section className="py-12 px-5 text-center">
+      <h2 className="text-2xl font-bold text-gray-800">Shop by Category</h2>
 
-      <div className="categories-grid">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-w-5xl mx-auto mt-8">
         {categoriesData.map((cat) => (
           <div
             key={cat.name}
-            className="category-card"
-            style={{ backgroundColor: cat.color, cursor: "pointer" }}
+            className={`${cat.color} p-8 rounded-2xl cursor-pointer flex flex-col items-center gap-2.5 font-bold text-[#1a1a2e] transition-transform duration-250 ease-in-out hover:-translate-y-1.5 hover:shadow-lg`}
             onClick={() => handleCategoryClick(cat.name)}
           >
-            <span className="category-emoji">{cat.emoji}</span>
-            <h3 className="category-name">{cat.name}</h3>
+            <span className="text-5xl">{cat.emoji}</span>
+            <h3 className="text-base">{cat.name}</h3>
           </div>
         ))}
       </div>

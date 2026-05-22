@@ -4,7 +4,7 @@ import axios from 'axios';
 import Button from '../components/Button';
 import Input from '../components/Input';
 
-const API_LINK = import.meta.env.AUTH_API;
+const API_URL = 'https://dummyjson.com';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -19,28 +19,26 @@ const Login = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((p) => ({ ...p, [name]: value }));
-    if (errors[name]) setErrors((p) => ({ ...p, [name]: '' }));
+    setFormData({ ...formData, [name]: value });
+    if (errors[name]) setErrors({ ...errors, [name]: '' });
   };
 
   const validateField = (name, value) => {
     if (name === 'email') {
       if (!value) return 'Email is required';
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Enter a valid email';
-      return '';
     }
     if (name === 'password') {
       if (!value) return 'Password is required';
       if (value.length < 6) return 'Password must be at least 6 characters';
-      return '';
     }
     return '';
   };
 
   const handleBlur = (e) => {
     const { name, value } = e.target;
-    const err = validateField(name, value);
-    setErrors((p) => ({ ...p, [name]: err }));
+    const error = validateField(name, value);
+    setErrors({ ...errors, [name]: error });
   };
 
   const validateForm = () => {
@@ -59,23 +57,23 @@ const Login = () => {
     if (!validateForm()) return;
     setLoading(true);
     try {
-      const demoUser = localStorage.getItem('demoUser');
-      if (demoUser) {
-        const userData = JSON.parse(demoUser);
-        if (userData.email === formData.email && userData.password === formData.password) {
-          const mockToken = 'demo-token-' + Date.now();
-          localStorage.setItem('myToken', mockToken);
+      const savedDemoUser = localStorage.getItem('demoUser');
+      if (savedDemoUser) {
+        const demoUser = JSON.parse(savedDemoUser);
+        if (demoUser.email === formData.email && demoUser.password === formData.password) {
+          const fakeToken = 'demo-token-' + Date.now();
+          localStorage.setItem('myToken', fakeToken);
           localStorage.setItem('myUser', JSON.stringify({
-            firstName: userData.firstName,
-            lastName: userData.lastName,
-            email: userData.email
+            firstName: demoUser.firstName,
+            lastName: demoUser.lastName,
+            email: demoUser.email,
           }));
           navigate('/');
           return;
         }
       }
 
-      const response = await axios.post(`${API_LINK}/auth/login`, {
+      const response = await axios.post(`${API_URL}/auth/login`, {
         username: formData.email,
         password: formData.password,
         expiresInMins: 60,
@@ -93,15 +91,6 @@ const Login = () => {
     }
   };
 
-  const fillDemo = () => {
-    const demo = JSON.parse(localStorage.getItem('demoUser') || '{}');
-    if (demo.email && demo.password) setFormData({ email: demo.email, password: demo.password });
-    else {
-      // optional demo fallback
-      setFormData({ email: 'demo@example.com', password: 'demopass' });
-    }
-  };
-
   const inputBase = 'w-full px-4 py-3 border-2 rounded-lg text-base bg-gray-100 focus:outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-200 transition';
   const inputErr = 'border-red-500 bg-red-50';
 
@@ -110,7 +99,6 @@ const Login = () => {
       <section className="relative w-full max-w-md bg-white rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.12)] p-10 sm:p-12">
         <header className="mb-6 text-center">
           <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800">Sign In</h1>
-          
         </header>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
@@ -133,7 +121,6 @@ const Login = () => {
               autoComplete="email"
               className={`${inputBase} ${errors.email ? inputErr : ''}`}
               aria-invalid={errors.email ? 'true' : 'false'}
-              aria-describedby={errors.email ? 'email-error' : undefined}
             />
             {errors.email && <span id="email-error" className="text-red-500 text-sm ml-1">{errors.email}</span>}
           </div>
@@ -151,22 +138,17 @@ const Login = () => {
               autoComplete="current-password"
               className={`${inputBase} ${errors.password ? inputErr : ''}`}
               aria-invalid={errors.password ? 'true' : 'false'}
-              aria-describedby={errors.password ? 'password-error' : undefined}
             />
             {errors.password && <span id="password-error" className="text-red-500 text-sm ml-1">{errors.password}</span>}
           </div>
 
-          <div className="flex items-center justify-between gap-4">
-            <Button
-              type="submit"
-              className="flex-1 py-3 bg-gradient-to-br from-[#e94560] to-[#f093fb] text-white rounded-lg font-semibold shadow-md hover:-translate-y-0.5 transform transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
-              disabled={loading}
-            >
-              {loading ? 'Signing in...' : 'Sign In'}
-            </Button>
-
-            
-          </div>
+          <Button
+            type="submit"
+            className="w-full py-3 bg-gradient-to-br from-[#e94560] to-[#f093fb] text-white rounded-lg font-semibold shadow-md hover:-translate-y-0.5 transform transition disabled:opacity-60 disabled:cursor-not-allowed"
+            disabled={loading}
+          >
+            {loading ? 'Signing in...' : 'Sign In'}
+          </Button>
         </form>
 
         <div className="mt-5 text-center">
