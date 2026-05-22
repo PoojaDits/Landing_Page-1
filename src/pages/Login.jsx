@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Button from '../components/Button';
-import Input from '../components/Input';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 const API_URL = 'https://dummyjson.com';
 
@@ -91,25 +92,22 @@ const Login = () => {
     }
   };
 
-  const inputBase = 'w-full px-4 py-3 border-2 rounded-lg text-base bg-gray-100 focus:outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-200 transition';
-  const inputErr = 'border-red-500 bg-red-50';
-
   return (
     <main className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-[#0f2340] via-[#16213e] to-[#0b2544]">
-      <section className="relative w-full max-w-md bg-white rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.12)] p-10 sm:p-12">
+      <section className="relative w-full max-w-md bg-white rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.12)] p-10 sm:p-12 text-gray-800">
         <header className="mb-6 text-center">
           <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800">Sign In</h1>
         </header>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
           {mainError && (
-            <div role="alert" className="text-[#b91c1c] bg-[#fee2e2] px-3 py-2 rounded-md text-sm text-center">
+            <div role="alert" className="text-[#b91c1c] bg-[#fee2e2] px-3 py-2 rounded-md text-sm text-center font-medium">
               {mainError}
             </div>
           )}
 
           <div className="flex flex-col gap-2">
-            <label htmlFor="email" className="text-sm font-medium text-gray-700">Email</label>
+            <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email</Label>
             <Input
               id="email"
               type="email"
@@ -119,14 +117,14 @@ const Login = () => {
               onChange={handleChange}
               onBlur={handleBlur}
               autoComplete="email"
-              className={`${inputBase} ${errors.email ? inputErr : ''}`}
-              aria-invalid={errors.email ? 'true' : 'false'}
+              className={`h-12 bg-gray-50 border-gray-200 text-gray-800 focus-visible:ring-blue-200 focus-visible:border-blue-500 focus-visible:bg-white text-base transition-colors ${errors.email ? 'border-red-500 bg-red-50' : ''}`}
+              aria-invalid={!!errors.email}
             />
-            {errors.email && <span id="email-error" className="text-red-500 text-sm ml-1">{errors.email}</span>}
+            {errors.email && <span id="email-error" className="text-red-500 text-sm ml-1 font-medium">{errors.email}</span>}
           </div>
 
           <div className="flex flex-col gap-2">
-            <label htmlFor="password" className="text-sm font-medium text-gray-700">Password</label>
+            <Label htmlFor="password" className="text-sm font-medium text-gray-700">Password</Label>
             <Input
               id="password"
               type="password"
@@ -136,15 +134,15 @@ const Login = () => {
               onChange={handleChange}
               onBlur={handleBlur}
               autoComplete="current-password"
-              className={`${inputBase} ${errors.password ? inputErr : ''}`}
-              aria-invalid={errors.password ? 'true' : 'false'}
+              className={`h-12 bg-gray-50 border-gray-200 text-gray-800 focus-visible:ring-blue-200 focus-visible:border-blue-500 focus-visible:bg-white text-base transition-colors ${errors.password ? 'border-red-500 bg-red-50' : ''}`}
+              aria-invalid={!!errors.password}
             />
-            {errors.password && <span id="password-error" className="text-red-500 text-sm ml-1">{errors.password}</span>}
+            {errors.password && <span id="password-error" className="text-red-500 text-sm ml-1 font-medium">{errors.password}</span>}
           </div>
 
           <Button
             type="submit"
-            className="w-full py-3 bg-gradient-to-br from-[#e94560] to-[#f093fb] text-white rounded-lg font-semibold shadow-md hover:-translate-y-0.5 transform transition disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full h-12 mt-2 bg-gradient-to-br from-[#e94560] to-[#f093fb] text-white rounded-lg text-base font-semibold shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed border-none"
             disabled={loading}
           >
             {loading ? 'Signing in...' : 'Sign In'}

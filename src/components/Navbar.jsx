@@ -1,10 +1,19 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaShoppingCart, FaUserCircle } from "react-icons/fa";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 
 const Navbar = ({ totalItems, toggleCart, isLoggedIn, user }) => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('myToken');
@@ -15,19 +24,19 @@ const Navbar = ({ totalItems, toggleCart, isLoggedIn, user }) => {
   return (
     <nav className="bg-[#1a1a2e] text-white px-4 h-16 flex items-center justify-between sticky top-0 z-50 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.3),0_4px_6px_-2px_rgba(0,0,0,0.15)]">
 
-      <button
-        className="md:hidden bg-transparent border-none text-white text-2xl p-2 cursor-pointer"
+      <Button
+        variant="ghost"
+        size="icon"
+        className="md:hidden text-white hover:bg-white/10 hover:text-white"
         onClick={() => setMenuOpen(!menuOpen)}
         aria-label="Menu"
       >
-        ☰
-      </button>
-
+        <span className="text-2xl">☰</span>
+      </Button>
       
       <div className="text-xl md:text-2xl font-extrabold text-[#e94560] select-none">
         Shop<span className="text-white">Wave</span>
       </div>
-
     
       <ul
         className={`
@@ -57,48 +66,42 @@ const Navbar = ({ totalItems, toggleCart, isLoggedIn, user }) => {
           </Link>
         </li>
       </ul>
-
       
       <div className="flex items-center gap-3">
         {isLoggedIn && (
-          <div className="relative">
-            <button
-              className="bg-transparent border-none text-white p-1.5 rounded-full cursor-pointer flex items-center justify-center transition-colors duration-200 hover:bg-white/10"
-              onClick={() => setProfileOpen(!profileOpen)}
-              aria-label="Profile"
-            >
+          <DropdownMenu>
+            {/* The crucial fix is right here: we pass the Button via the 'render' prop instead of 'asChild' */}
+            <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="text-white rounded-full hover:bg-white/10 hover:text-white" />}>
               <FaUserCircle size={24} />
-            </button>
-
-            {profileOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded-lg shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-2px_rgba(0,0,0,0.05)] overflow-hidden animate-dropdown-fade-in z-[100]">
-                <div className="p-3">
-                  <p className="font-semibold m-0">{user?.firstName} {user?.lastName}</p>
-                  <p className="text-sm text-gray-600 whitespace-nowrap overflow-hidden text-ellipsis mt-0.5 mb-0">{user?.email}</p>
+            </DropdownMenuTrigger>
+            
+            <DropdownMenuContent align="end" className="w-56 mt-2 z-[100] bg-white text-black">
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">{user?.firstName} {user?.lastName}</p>
+                  <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
                 </div>
-                <hr className="border-0 border-t border-gray-200 m-0" />
-                <button
-                  className="w-full text-left px-3 py-2 bg-transparent border-none text-gray-700 text-sm cursor-pointer transition-colors duration-200 hover:bg-gray-100 hover:text-black"
-                  onClick={handleLogout}
-                >
-                  Sign out
-                </button>
-              </div>
-            )}
-          </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-gray-200" />
+              <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700">
+                Log out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
 
-        <button
-          className="bg-gradient-to-br from-[#e94560] to-[#f093fb] border-none text-white py-2 px-3 rounded-full flex items-center gap-2 cursor-pointer transition-all duration-200 hover:opacity-90 hover:scale-[1.02]"
+        <Button
+          variant="default"
           onClick={toggleCart}
+          className="bg-gradient-to-br from-[#e94560] to-[#f093fb] hover:opacity-90 rounded-full flex items-center gap-2 h-10 px-4 border-none"
         >
           <FaShoppingCart color="white" size={20} />
           {totalItems > 0 && (
-            <span className="bg-white text-[#e94560] rounded-full w-4 h-4 text-[10px] font-bold flex items-center justify-center">
+            <Badge variant="secondary" className="bg-white text-[#e94560] hover:bg-white hover:text-[#e94560] rounded-full w-5 h-5 flex items-center justify-center p-0 text-[10px]">
               {totalItems}
-            </span>
+            </Badge>
           )}
-        </button>
+        </Button>
       </div>
     </nav>
   );

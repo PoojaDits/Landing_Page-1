@@ -1,5 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+// Import the shadcn components
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 const ProductCard = ({ product, addToCart }) => {
   const navigate = useNavigate();
@@ -8,37 +12,51 @@ const ProductCard = ({ product, addToCart }) => {
   };
 
   return (
-    <div className="bg-[#dbeefd] rounded-xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.08)] flex flex-col hover:shadow-[0_6px_16px_rgba(34,70,128,0.18)] hover:-translate-y-1 cursor-pointer" onClick={() => navigate(`/product/${product.id}`)}>
-      <div className="h-[140px] md:h-[200px] bg-gradient-to-br from-[#f5f5f5] to-[#eeeeee] flex items-center justify-center text-[2.5rem] md:text-[4rem] relative">
+    <Card 
+      className="flex flex-col cursor-pointer overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 bg-card"
+      onClick={() => navigate(`/product/${product.id}`)}
+    >
+      <div className="h-[140px] md:h-[200px] bg-muted/30 flex items-center justify-center text-[2.5rem] md:text-[4rem] relative">
         <span>{product.emoji}</span>
-        {product.badge && <span className="absolute top-[5px] left-[5px] text-[0.6rem] px-[6px] py-[2px] bg-[#e94560] text-white rounded font-bold">{product.badge}</span>}
+        {/* Component-based Badge */}
+        {product.badge && (
+          <Badge className="absolute top-2 left-2 px-2 py-0 text-[0.65rem] font-bold">
+            {product.badge}
+          </Badge>
+        )}
       </div>
-      <div className="p-[10px] flex flex-col grow">
-        <p className="text-[0.65rem] text-[#1a1a2e] font-bold">{product.category}</p>
-        <h3 className="text-[0.85rem] md:text-[1.1rem] font-bold my-1 text-[#1a1a2e]">{product.name}</h3>
-        <div className="text-xs text-gray-500 mb-2">
-          <span className="text-yellow-400 mr-1">{renderStars(product.rating)}</span>
+      
+      {/* Component-based Content Area */}
+      <CardContent className="p-4 flex flex-col grow">
+        <p className="text-[0.65rem] text-muted-foreground font-bold uppercase tracking-wider">{product.category}</p>
+        <h3 className="text-base md:text-lg font-bold my-1 text-foreground leading-tight">{product.name}</h3>
+        <div className="text-xs text-muted-foreground mb-4 flex items-center">
+          <span className="text-yellow-500 mr-1 text-sm">{renderStars(product.rating)}</span>
           <span>({product.reviews})</span>
         </div>
-        <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-2 mt-auto pt-2">
-          <div>
-            <span className="text-[1rem] md:text-[1.25rem] font-extrabold mr-2">${product.price}</span>
-            {product.originalPrice && (
-              <span className="text-sm line-through text-gray-400">${product.originalPrice}</span>
-            )}
-          </div>
-          <button
-            className="w-full md:w-auto bg-[#e94560] text-white border-none py-2 px-3 rounded-md text-[0.75rem] font-semibold cursor-pointer hover:bg-[#d63a52] hover:-translate-y-0.5 hover:shadow-[0_2px_8px_rgba(233,69,96,0.3)]"
-            onClick={(e) => {
-              e.stopPropagation();
-              addToCart(product);
-            }}
-          >
-            + Add
-          </button>
+      </CardContent>
+
+      {/* Component-based Footer Area */}
+      <CardFooter className="p-4 pt-0 flex flex-col md:flex-row md:justify-between items-start md:items-center gap-3">
+        <div className="flex items-center gap-2">
+          <span className="text-lg md:text-xl font-extrabold">${product.price}</span>
+          {product.originalPrice && (
+            <span className="text-sm line-through text-muted-foreground">${product.originalPrice}</span>
+          )}
         </div>
-      </div>
-    </div>
+        {/* Component-based Button */}
+        <Button
+          className="w-full md:w-auto font-semibold"
+          size="sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            addToCart(product);
+          }}
+        >
+          + Add
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };
 
