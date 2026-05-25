@@ -86,7 +86,7 @@ export default function Signup() {
         {mainError && <div className="mb-6 p-4 rounded-xl text-sm" style={{ background: 'rgba(233,69,96,0.1)', border: '1px solid rgba(233,69,96,0.2)', color: '#e94560' }}>{mainError}</div>}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <Label className="text-sm font-semibold text-gray-300 mb-3 block">I am a...</Label>
+            <Label className="text-sm font-semibold text-gray-300 mb-3 block"></Label>
             <div className="grid grid-cols-3 gap-2">
               {roles.map(r => (
                 <button key={r.value} type="button" onClick={() => setFormData(prev => ({ ...prev, role: r.value }))}
@@ -101,14 +101,14 @@ export default function Signup() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="firstName" className="text-gray-300">First Name</Label>
-              <Input id="firstName" name="firstName" placeholder="John" value={formData.firstName}
+              <Input id="firstName" name="firstName" placeholder="FirstName" value={formData.firstName}
                 onChange={handleChange} onBlur={handleBlur}
                 className={cn(inp, errors.firstName && 'border-[#e94560] bg-[#e94560]/5')} />
               {errors.firstName && <p className="text-[#e94560] text-sm mt-1">{errors.firstName}</p>}
             </div>
             <div>
               <Label htmlFor="lastName" className="text-gray-300">Last Name</Label>
-              <Input id="lastName" name="lastName" placeholder="Doe" value={formData.lastName}
+              <Input id="lastName" name="lastName" placeholder="LastName" value={formData.lastName}
                 onChange={handleChange} onBlur={handleBlur}
                 className={cn(inp, errors.lastName && 'border-[#e94560] bg-[#e94560]/5')} />
               {errors.lastName && <p className="text-[#e94560] text-sm mt-1">{errors.lastName}</p>}
