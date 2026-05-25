@@ -150,7 +150,7 @@ const Signup = () => {
               id="email"
               type="email"
               name="email"
-              placeholder="you@example.com"
+              placeholder="abc@example.com"
               value={formData.email}
               onChange={handleChange}
               onBlur={handleBlur}

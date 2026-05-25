@@ -1,5 +1,4 @@
-// useAppHooks.js
-// All custom hooks for the whole project in one file
+
 
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
