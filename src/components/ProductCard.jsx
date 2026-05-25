@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-// Import the shadcn components
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,7 +25,7 @@ const ProductCard = ({ product, addToCart }) => {
         )}
       </div>
       
-      {/* Component-based Content Area */}
+      
       <CardContent className="p-4 flex flex-col grow">
         <p className="text-[0.65rem] text-muted-foreground font-bold uppercase tracking-wider">{product.category}</p>
         <h3 className="text-base md:text-lg font-bold my-1 text-foreground leading-tight">{product.name}</h3>
@@ -36,7 +35,7 @@ const ProductCard = ({ product, addToCart }) => {
         </div>
       </CardContent>
 
-      {/* Component-based Footer Area */}
+      
       <CardFooter className="p-4 pt-0 flex flex-col md:flex-row md:justify-between items-start md:items-center gap-3">
         <div className="flex items-center gap-2">
           <span className="text-lg md:text-xl font-extrabold">${product.price}</span>
@@ -44,7 +43,7 @@ const ProductCard = ({ product, addToCart }) => {
             <span className="text-sm line-through text-muted-foreground">${product.originalPrice}</span>
           )}
         </div>
-        {/* Component-based Button */}
+      
         <Button
           className="w-full md:w-auto font-semibold text-white border-0"
           style={{ background: 'linear-gradient(135deg, #e94560, #f85c76)', boxShadow: '0 4px 20px rgba(233,69,96,0.3)' }}

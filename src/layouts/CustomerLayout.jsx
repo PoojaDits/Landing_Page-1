@@ -57,7 +57,7 @@ export default function CustomerLayout({ cartItems = [], totalItems = 0, toggleC
         <div className="min-h-screen flex" style={{ background: BG }}>
             {sidebarOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />}
 
-            {/* ── Sidebar ── */}
+        
             <aside className={cn(
                 'fixed top-0 left-0 z-50 h-full w-60 flex flex-col shrink-0 transition-transform duration-300 lg:translate-x-0 lg:relative',
                 sidebarOpen ? 'translate-x-0' : '-translate-x-full'
@@ -74,7 +74,7 @@ export default function CustomerLayout({ cartItems = [], totalItems = 0, toggleC
                     </button>
                 </div>
 
-                {/* Nav Sections */}
+                
                 <nav className="flex-1 overflow-y-auto py-2 px-2 space-y-5">
                     {sections.map(sec => (
                         <div key={sec.label}>
@@ -100,7 +100,7 @@ export default function CustomerLayout({ cartItems = [], totalItems = 0, toggleC
                     ))}
                 </nav>
 
-                {/* Mini Cart in Sidebar */}
+                
                 {cartItems && cartItems.length > 0 && (
                     <div className="px-4 py-3 border-t shrink-0" style={{ borderColor: BD, background: 'rgba(0,0,0,0.1)' }}>
                         <div className="flex justify-between items-center mb-2">
@@ -123,7 +123,7 @@ export default function CustomerLayout({ cartItems = [], totalItems = 0, toggleC
                     </div>
                 )}
 
-                {/* Profile + Logout */}
+                
                 <div className="border-t p-2 space-y-0.5" style={{ borderColor: BD }}>
                     <Link to="/customer/settings" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all">
                         <User className="w-4 h-4" style={{ color: MUTED }} /> Profile
@@ -135,7 +135,7 @@ export default function CustomerLayout({ cartItems = [], totalItems = 0, toggleC
                 </div>
             </aside>
 
-            {/* ── Main ── */}
+    
             <div className="flex-1 flex flex-col min-w-0">
                 <header className="sticky top-0 z-30 h-14 flex items-center justify-between px-4 sm:px-6 shrink-0 border-b"
                     style={{ background: HB, borderColor: BD, backdropFilter: 'blur(12px)' }}>

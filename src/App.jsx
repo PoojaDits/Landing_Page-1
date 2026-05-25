@@ -24,8 +24,22 @@ import { isLoggedIn, getDashboardPath, getStoredUser, clearAuth, getUserRole } f
 
 const ProductsPage = ({ selectedCategory, setSelectedCategory, addToCart }) => {
   const { category } = useParams();
-  React.useEffect(() => { setSelectedCategory(category || 'All'); }, [category, setSelectedCategory]);
-  return <ProductGrid category={category || selectedCategory || 'All'} addToCart={addToCart} />;
+
+  // Keep parent state in sync with the URL param whenever it changes
+  React.useEffect(() => {
+    setSelectedCategory(category || 'All');
+  }, [category, setSelectedCategory]);
+
+  // URL wins, then state, then "All"
+  const activeCategory = category || selectedCategory || 'All';
+
+  return (
+    <ProductGrid
+      selectedCategory={activeCategory}
+      setSelectedCategory={setSelectedCategory}
+      addToCart={addToCart}
+    />
+  );
 };
 
 function RoleRedirect() {

@@ -1,3 +1,7 @@
-export default function AdminDashboard() {
-    return <h2 className="text-2xl font-bold text-gray-900">Customer Dashboard</h2>;
+export default function CustomerDashboard() {
+  return (
+    <h2 className="text-2xl font-bold text-white">
+      Customer Dashboard
+    </h2>
+  );
 }

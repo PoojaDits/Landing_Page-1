@@ -14,8 +14,15 @@ const Categories = ({ setSelectedCategory }) => {
   const navigate = useNavigate();
 
   const handleCategoryClick = (categoryName) => {
-    setSelectedCategory(categoryName);
-    navigate(`/products/${categoryName}`);
+
+    if (typeof setSelectedCategory === "function") {
+      setSelectedCategory(categoryName);
+    }
+    if (categoryName === "All") {
+      navigate(`/products`);
+    } else {
+      navigate(`/products/${categoryName}`);
+    }
   };
 
   return (

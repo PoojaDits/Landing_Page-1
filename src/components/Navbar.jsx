@@ -70,7 +70,7 @@ const Navbar = ({ totalItems, toggleCart, isLoggedIn, user }) => {
       <div className="flex items-center gap-3">
         {isLoggedIn && (
           <DropdownMenu>
-            {/* The crucial fix is right here: we pass the Button via the 'render' prop instead of 'asChild' */}
+            
             <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="text-white rounded-full hover:bg-white/10 hover:text-white" />}>
               <FaUserCircle size={24} />
             </DropdownMenuTrigger>

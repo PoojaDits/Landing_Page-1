@@ -9,15 +9,9 @@ import { isLoggedIn, storeLogin, getUserRole, DASHBOARD_PATHS, ROLES } from '@/l
 
 const API_URL = 'https://dummyjson.com';
 
-const roles = [
-  { value: ROLES.CUSTOMER, label: 'Customer' },
-  { value: ROLES.ADMIN, label: 'Admin' },
-  { value: ROLES.SUPER_ADMIN, label: 'Super Admin' },
-];
-
 export default function Login() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ email: '', password: '', role: ROLES.CUSTOMER });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [mainError, setMainError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -65,24 +59,32 @@ export default function Login() {
     if (!validateForm()) return;
     setLoading(true);
     try {
+      // 1) Try the demo user that was created at signup (this is where the role lives)
       const savedDemo = localStorage.getItem('demoUser');
       if (savedDemo) {
         const demo = JSON.parse(savedDemo);
         if (demo.email === formData.email && demo.password === formData.password) {
+          const role = demo.role || ROLES.CUSTOMER;
           storeLogin({
-            firstName: demo.firstName, lastName: demo.lastName,
-            email: demo.email, role: demo.role || formData.role,
+            firstName: demo.firstName,
+            lastName: demo.lastName,
+            email: demo.email,
+            role,
           }, 'demo-token-' + Date.now());
-          navigate(DASHBOARD_PATHS[demo.role || formData.role] || '/');
+          navigate(DASHBOARD_PATHS[role] || '/');
           return;
         }
       }
+
+      // 2) Fallback: dummyjson login. No role info comes back, so anyone who
+      //    didn't sign up locally is treated as a regular customer.
       const { data } = await axios.post(`${API_URL}/auth/login`, {
         username: formData.email, password: formData.password, expiresInMins: 60,
       });
       const { accessToken, ...userFields } = data;
-      storeLogin({ ...userFields, role: formData.role }, accessToken);
-      navigate(DASHBOARD_PATHS[formData.role] || '/');
+      const role = ROLES.CUSTOMER;
+      storeLogin({ ...userFields, role }, accessToken);
+      navigate(DASHBOARD_PATHS[role] || '/');
     } catch (err) {
       setMainError(err.response?.data?.message || 'Invalid credentials');
     } finally {
@@ -99,19 +101,6 @@ export default function Login() {
         </div>
         {mainError && <div className="mb-6 p-4 rounded-xl text-sm" style={{ background: 'rgba(233,69,96,0.1)', border: '1px solid rgba(233,69,96,0.2)', color: '#e94560' }}>{mainError}</div>}
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <Label className="text-sm font-semibold text-gray-300 mb-3 block">Sign in as</Label>
-            <div className="grid grid-cols-3 gap-2">
-              {roles.map(r => (
-                <button key={r.value} type="button" onClick={() => setFormData(prev => ({ ...prev, role: r.value }))}
-                  className={cn('p-3 rounded-xl border-2 text-center transition-all',
-                    formData.role === r.value ? 'text-white' : 'border-gray-700 text-gray-500 hover:border-gray-600 bg-transparent')}
-                  style={formData.role === r.value ? { background: 'rgba(233,69,96,0.15)', borderColor: '#e94560' } : {}}>
-                  <div className="text-xs font-bold">{r.label}</div>
-                </button>
-              ))}
-            </div>
-          </div>
           <div>
             <Label htmlFor="email" className="text-gray-300">Email</Label>
             <Input id="email" name="email" type="email" placeholder="you@example.com" value={formData.email}
