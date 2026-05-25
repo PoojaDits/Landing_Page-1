@@ -45,10 +45,11 @@ const ContactForm = () => {
             onBlur={formik.handleBlur}
             autoComplete="off"
             placeholder="Your Name"
+            className={formik.touched.name && formik.errors.name ? "border-[#e94560] focus-visible:ring-[#e94560]" : ""}
             aria-invalid={!!(formik.touched.name && formik.errors.name)}
           />
           {formik.touched.name && formik.errors.name ? (
-            <div className="text-destructive text-sm mt-1">{formik.errors.name}</div>
+            <div className="text-[#e94560] text-sm mt-1">{formik.errors.name}</div>
           ) : null}
         </div>
 
@@ -63,10 +64,11 @@ const ContactForm = () => {
             onBlur={formik.handleBlur}
             autoComplete="off"
             placeholder="your.email@example.com"
+            className={formik.touched.email && formik.errors.email ? "border-[#e94560] focus-visible:ring-[#e94560]" : ""}
             aria-invalid={!!(formik.touched.email && formik.errors.email)}
           />
           {formik.touched.email && formik.errors.email ? (
-            <div className="text-destructive text-sm mt-1">{formik.errors.email}</div>
+            <div className="text-[#e94560] text-sm mt-1">{formik.errors.email}</div>
           ) : null}
         </div>
 
@@ -80,11 +82,11 @@ const ContactForm = () => {
             onBlur={formik.handleBlur}
             placeholder="Your message here..."
             rows="5"
-            className="flex min-h-[120px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive"
+            className={`flex min-h-[120px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 ${formik.touched.message && formik.errors.message ? "border-[#e94560] focus-visible:ring-[#e94560]" : ""}`}
             aria-invalid={!!(formik.touched.message && formik.errors.message)}
           />
           {formik.touched.message && formik.errors.message ? (
-            <div className="text-destructive text-sm mt-1">{formik.errors.message}</div>
+            <div className="text-[#e94560] text-sm mt-1">{formik.errors.message}</div>
           ) : null}
         </div>
 
@@ -92,7 +94,8 @@ const ContactForm = () => {
           type="submit"
           disabled={formik.isSubmitting}
           size="lg"
-          className="w-full mt-2 font-semibold"
+          className="w-full mt-2 font-semibold text-white border-0 hover:opacity-90 transition-opacity"
+          style={{ background: 'linear-gradient(135deg, #e94560, #f85c76)', boxShadow: '0 4px 20px rgba(233,69,96,0.4)' }}
         >
           {formik.isSubmitting ? 'Sending...' : 'Send Message'}
         </Button>

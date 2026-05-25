@@ -4,24 +4,32 @@ import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
+import { isLoggedIn, storeLogin, getUserRole, DASHBOARD_PATHS, ROLES } from '@/lib/role';
 
 const API_URL = 'https://dummyjson.com';
 
-const Login = () => {
+const roles = [
+  { value: ROLES.CUSTOMER, label: 'Customer' },
+  { value: ROLES.ADMIN, label: 'Admin' },
+  { value: ROLES.SUPER_ADMIN, label: 'Super Admin' },
+];
+
+export default function Login() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ email: '', password: '', role: ROLES.CUSTOMER });
   const [errors, setErrors] = useState({});
   const [mainError, setMainError] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem('myToken')) navigate('/');
+    if (isLoggedIn()) navigate(DASHBOARD_PATHS[getUserRole()] || '/', { replace: true });
   }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-    if (errors[name]) setErrors({ ...errors, [name]: '' });
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
   const validateField = (name, value) => {
@@ -38,18 +46,17 @@ const Login = () => {
 
   const handleBlur = (e) => {
     const { name, value } = e.target;
-    const error = validateField(name, value);
-    setErrors({ ...errors, [name]: error });
+    setErrors(prev => ({ ...prev, [name]: validateField(name, value) }));
   };
 
   const validateForm = () => {
-    const newErrors = {};
-    if (!formData.email) newErrors.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Enter a valid email';
-    if (!formData.password) newErrors.password = 'Password is required';
-    else if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    const errs = {};
+    const emailErr = validateField('email', formData.email);
+    const passErr = validateField('password', formData.password);
+    if (emailErr) errs.email = emailErr;
+    if (passErr) errs.password = passErr;
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
   };
 
   const handleSubmit = async (e) => {
@@ -58,107 +65,78 @@ const Login = () => {
     if (!validateForm()) return;
     setLoading(true);
     try {
-      const savedDemoUser = localStorage.getItem('demoUser');
-      if (savedDemoUser) {
-        const demoUser = JSON.parse(savedDemoUser);
-        if (demoUser.email === formData.email && demoUser.password === formData.password) {
-          const fakeToken = 'demo-token-' + Date.now();
-          localStorage.setItem('myToken', fakeToken);
-          localStorage.setItem('myUser', JSON.stringify({
-            firstName: demoUser.firstName,
-            lastName: demoUser.lastName,
-            email: demoUser.email,
-          }));
-          navigate('/');
+      const savedDemo = localStorage.getItem('demoUser');
+      if (savedDemo) {
+        const demo = JSON.parse(savedDemo);
+        if (demo.email === formData.email && demo.password === formData.password) {
+          storeLogin({
+            firstName: demo.firstName, lastName: demo.lastName,
+            email: demo.email, role: demo.role || formData.role,
+          }, 'demo-token-' + Date.now());
+          navigate(DASHBOARD_PATHS[demo.role || formData.role] || '/');
           return;
         }
       }
-
-      const response = await axios.post(`${API_URL}/auth/login`, {
-        username: formData.email,
-        password: formData.password,
-        expiresInMins: 60,
+      const { data } = await axios.post(`${API_URL}/auth/login`, {
+        username: formData.email, password: formData.password, expiresInMins: 60,
       });
-
-      const { accessToken, ...userData } = response.data;
-      localStorage.setItem('myToken', accessToken);
-      localStorage.setItem('myUser', JSON.stringify(userData));
-      navigate('/');
+      const { accessToken, ...userFields } = data;
+      storeLogin({ ...userFields, role: formData.role }, accessToken);
+      navigate(DASHBOARD_PATHS[formData.role] || '/');
     } catch (err) {
-      const msg = err.response?.data?.message || 'Invalid credentials or user not found';
-      setMainError(msg);
+      setMainError(err.response?.data?.message || 'Invalid credentials');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-[#0f2340] via-[#16213e] to-[#0b2544]">
-      <section className="relative w-full max-w-md bg-white rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.12)] p-10 sm:p-12 text-gray-800">
-        <header className="mb-6 text-center">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800">Sign In</h1>
-        </header>
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
-          {mainError && (
-            <div role="alert" className="text-[#b91c1c] bg-[#fee2e2] px-3 py-2 rounded-md text-sm text-center font-medium">
-              {mainError}
+    <div style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }} className="min-h-[80vh] flex items-center justify-center py-12 px-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-white">Welcome Back</h1>
+          <p className="text-gray-400 mt-2">Sign in to your account</p>
+        </div>
+        {mainError && <div className="mb-6 p-4 rounded-xl text-sm" style={{ background: 'rgba(233,69,96,0.1)', border: '1px solid rgba(233,69,96,0.2)', color: '#e94560' }}>{mainError}</div>}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <Label className="text-sm font-semibold text-gray-300 mb-3 block">Sign in as</Label>
+            <div className="grid grid-cols-3 gap-2">
+              {roles.map(r => (
+                <button key={r.value} type="button" onClick={() => setFormData(prev => ({ ...prev, role: r.value }))}
+                  className={cn('p-3 rounded-xl border-2 text-center transition-all',
+                    formData.role === r.value ? 'text-white' : 'border-gray-700 text-gray-500 hover:border-gray-600 bg-transparent')}
+                  style={formData.role === r.value ? { background: 'rgba(233,69,96,0.15)', borderColor: '#e94560' } : {}}>
+                  <div className="text-xs font-bold">{r.label}</div>
+                </button>
+              ))}
             </div>
-          )}
-
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              name="email"
-              placeholder="abc@example.com"
-              value={formData.email}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              autoComplete="email"
-              className={`h-12 bg-gray-50 border-gray-200 text-gray-800 focus-visible:ring-blue-200 focus-visible:border-blue-500 focus-visible:bg-white text-base transition-colors ${errors.email ? 'border-red-500 bg-red-50' : ''}`}
-              aria-invalid={!!errors.email}
-            />
-            {errors.email && <span id="email-error" className="text-red-500 text-sm ml-1 font-medium">{errors.email}</span>}
           </div>
-
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="password" className="text-sm font-medium text-gray-700">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              name="password"
-              placeholder="••••••••"
-              value={formData.password}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              autoComplete="current-password"
-              className={`h-12 bg-gray-50 border-gray-200 text-gray-800 focus-visible:ring-blue-200 focus-visible:border-blue-500 focus-visible:bg-white text-base transition-colors ${errors.password ? 'border-red-500 bg-red-50' : ''}`}
-              aria-invalid={!!errors.password}
-            />
-            {errors.password && <span id="password-error" className="text-red-500 text-sm ml-1 font-medium">{errors.password}</span>}
+          <div>
+            <Label htmlFor="email" className="text-gray-300">Email</Label>
+            <Input id="email" name="email" type="email" placeholder="you@example.com" value={formData.email}
+              onChange={handleChange} onBlur={handleBlur}
+              className={cn('h-12 bg-white/5 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-[#e94560]', errors.email && 'border-[#e94560]')} />
+            {errors.email && <p className="text-[#e94560] text-sm mt-1">{errors.email}</p>}
           </div>
-
-          <Button
-            type="submit"
-            className="w-full h-12 mt-2 bg-gradient-to-br from-[#e94560] to-[#f093fb] text-white rounded-lg text-base font-semibold shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed border-none"
-            disabled={loading}
-          >
+          <div>
+            <Label htmlFor="password" className="text-gray-300">Password</Label>
+            <Input id="password" name="password" type="password" placeholder="••••••••" value={formData.password}
+              onChange={handleChange} onBlur={handleBlur}
+              className={cn('h-12 bg-white/5 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-[#e94560]', errors.password && 'border-[#e94560]')} />
+            {errors.password && <p className="text-[#e94560] text-sm mt-1">{errors.password}</p>}
+          </div>
+          <Button type="submit" className="w-full h-12 text-base font-semibold text-white border-0" disabled={loading}
+            style={{ background: 'linear-gradient(135deg, #e94560, #f85c76)', boxShadow: '0 4px 20px rgba(233,69,96,0.4)' }}>
             {loading ? 'Signing in...' : 'Sign In'}
           </Button>
         </form>
-
-        <div className="mt-5 text-center">
-          <a href="#" className="text-[#e94560] text-sm font-medium hover:underline">Forgot Password?</a>
+        <div className="mt-6 text-center text-sm text-gray-400">
+          <Link to="#" className="font-medium" style={{ color: '#e94560' }}>Forgot Password?</Link>
+          <span className="mx-2">·</span>
+          Don&apos;t have an account? <Link to="/signup" className="font-medium" style={{ color: '#e94560' }}>Sign up</Link>
         </div>
-
-        <p className="mt-6 text-center text-sm text-gray-600">
-          Don't have an account? <Link to="/signup" className="text-[#e94560] font-semibold hover:underline">Sign up</Link>
-        </p>
-      </section>
-    </main>
+      </div>
+    </div>
   );
-};
-
-export default Login;
+}

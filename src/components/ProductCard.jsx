@@ -13,7 +13,7 @@ const ProductCard = ({ product, addToCart }) => {
 
   return (
     <Card 
-      className="flex flex-col cursor-pointer overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 bg-card"
+      className="flex flex-col cursor-pointer overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 bg-white"
       onClick={() => navigate(`/product/${product.id}`)}
     >
       <div className="h-[140px] md:h-[200px] bg-muted/30 flex items-center justify-center text-[2.5rem] md:text-[4rem] relative">
@@ -46,7 +46,8 @@ const ProductCard = ({ product, addToCart }) => {
         </div>
         {/* Component-based Button */}
         <Button
-          className="w-full md:w-auto font-semibold"
+          className="w-full md:w-auto font-semibold text-white border-0"
+          style={{ background: 'linear-gradient(135deg, #e94560, #f85c76)', boxShadow: '0 4px 20px rgba(233,69,96,0.3)' }}
           size="sm"
           onClick={(e) => {
             e.stopPropagation();

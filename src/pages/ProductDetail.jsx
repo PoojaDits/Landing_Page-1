@@ -81,7 +81,8 @@ const ProductDetail = ({ addToCart }) => {
           
           <Button 
             size="lg" 
-            className="w-full sm:max-w-sm rounded-full h-14 text-lg font-bold"
+            className="w-full sm:max-w-sm rounded-full h-14 text-lg font-bold text-white border-0 hover:opacity-90 transition-opacity"
+            style={{ background: 'linear-gradient(135deg, #e94560, #f85c76)', boxShadow: '0 4px 20px rgba(233,69,96,0.4)' }}
             onClick={() => addToCart(product)}
           >
             🛒 Add to Cart
