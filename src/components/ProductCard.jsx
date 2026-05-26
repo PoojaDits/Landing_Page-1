@@ -17,7 +17,7 @@ const ProductCard = ({ product, addToCart }) => {
     >
       <div className="h-[140px] md:h-[200px] bg-muted/30 flex items-center justify-center text-[2.5rem] md:text-[4rem] relative">
         <span>{product.emoji}</span>
-        {/* Component-based Badge */}
+      
         {product.badge && (
           <Badge className="absolute top-2 left-2 px-2 py-0 text-[0.65rem] font-bold">
             {product.badge}
