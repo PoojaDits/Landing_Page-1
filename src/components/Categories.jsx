@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const categoriesData = [
   { name: "Electronics", emoji: "📱", color: "bg-[#ff6b6b]" },
@@ -12,22 +12,24 @@ const categoriesData = [
 
 const Categories = ({ setSelectedCategory }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const basePath = location.pathname.startsWith("/customer") ? "/customer" : "";
 
   const handleCategoryClick = (categoryName) => {
-
     if (typeof setSelectedCategory === "function") {
       setSelectedCategory(categoryName);
     }
     if (categoryName === "All") {
-      navigate(`/products`);
+      navigate(`${basePath}/products`);
     } else {
-      navigate(`/products/${categoryName}`);
+      navigate(`${basePath}/products/${categoryName}`);
     }
   };
 
   return (
-    <section className="py-12 px-5 text-center">
-      <h2 className="text-2xl font-bold text-gray-800">Shop by Category</h2>
+    <section className="py-12 px-5 text-center bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
+      <h2 className="text-2xl font-bold text-white">Shop by Category</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-w-5xl mx-auto mt-8">
         {categoriesData.map((cat) => (

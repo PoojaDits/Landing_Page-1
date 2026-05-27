@@ -11,13 +11,18 @@ export const ROLE_LABELS = {
 };
 
 export const DASHBOARD_PATHS = {
-    [ROLES.CUSTOMER]: '/customer/dashboard',
+    [ROLES.CUSTOMER]: '/customer/home',
     [ROLES.ADMIN]: '/admin/dashboard',
     [ROLES.SUPER_ADMIN]: '/super-admin/dashboard',
 };
 
 export function getStoredUser() {
-    try { return JSON.parse(localStorage.getItem('myUser')); } catch { return null; }
+    try { 
+        return JSON.parse(localStorage.getItem('myUser')); 
+
+    } catch {
+         return null; 
+        }
 }
 
 export function getUserRole() {

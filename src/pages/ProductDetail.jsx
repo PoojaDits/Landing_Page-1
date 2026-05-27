@@ -1,7 +1,6 @@
 import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-
 import { Badge } from "@/components/ui/badge";
 
 const products = [
@@ -18,78 +17,88 @@ const products = [
 const ProductDetail = ({ addToCart }) => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const product = products.find((p) => p.id === parseInt(id));
+
+  // Keep links inside the customer section when relevant.
+  const basePath = location.pathname.startsWith("/customer") ? "/customer" : "";
 
   if (!product) {
     return (
-      <div className="py-[100px] px-5 text-center flex flex-col items-center">
-        <h2 className="text-2xl font-bold mb-4">Product not found!</h2>
-        <Button onClick={() => navigate('/products')}>Back to Products</Button>
-      </div>
+      <section className="min-h-full py-20 px-5 text-center flex flex-col items-center bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
+        <h2 className="text-2xl font-bold mb-4 text-white">Product not found!</h2>
+        <Button onClick={() => navigate(`${basePath}/products`)}>Back to Products</Button>
+      </section>
     );
   }
 
   return (
-    <div className="py-10 px-5 max-w-[900px] mx-auto min-h-[80vh]">
-      <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6 pl-0 hover:bg-transparent text-primary">
-        ← Back
-      </Button>
-      
-      <div className="flex flex-col md:flex-row gap-10 bg-card text-card-foreground p-8 md:p-10 rounded-2xl shadow-sm border">
-        <div className="flex-1 min-w-[300px] h-[300px] md:h-auto text-[10rem] flex items-center justify-center bg-muted/40 rounded-xl">
-          {product.emoji}
-        </div>
-        
-        <div className="flex-1 min-w-[300px] flex flex-col justify-center">
-          {product.badge && (
-            <Badge className="self-start mb-4 px-3 py-1 text-sm">
-              {product.badge}
-            </Badge>
-          )}
-          
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">
-            {product.name}
-          </h1>
-          
-          <p className="text-muted-foreground text-sm mb-6 uppercase tracking-widest font-semibold">
-            {product.category}
-          </p>
-          
-          <div className="flex items-baseline gap-4 mb-6">
-            <h2 className="text-4xl font-bold text-primary m-0">
-              ${product.price}
-            </h2>
-            {product.originalPrice && (
-              <span className="line-through text-muted-foreground text-lg">
-                ${product.originalPrice}
-              </span>
+    <section className="min-h-full py-10 px-5 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
+      <div className="max-w-[900px] mx-auto">
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="mb-6 pl-0 hover:bg-white/10 text-white"
+        >
+          ← Back
+        </Button>
+
+        <div className="flex flex-col md:flex-row gap-10 bg-white text-gray-900 p-8 md:p-10 rounded-2xl shadow-2xl border border-white/10">
+          <div className="flex-1 min-w-[300px] h-[300px] md:h-auto text-[10rem] flex items-center justify-center bg-gray-100 rounded-xl">
+            {product.emoji}
+          </div>
+
+          <div className="flex-1 min-w-[300px] flex flex-col justify-center">
+            {product.badge && (
+              <Badge className="self-start mb-4 px-3 py-1 text-sm">
+                {product.badge}
+              </Badge>
             )}
+
+            <h1 className="text-3xl md:text-4xl font-bold mb-2">
+              {product.name}
+            </h1>
+
+            <p className="text-gray-500 text-sm mb-6 uppercase tracking-widest font-semibold">
+              {product.category}
+            </p>
+
+            <div className="flex items-baseline gap-4 mb-6">
+              <h2 className="text-4xl font-bold m-0" style={{ color: "#e94560" }}>
+                ${product.price}
+              </h2>
+              {product.originalPrice && (
+                <span className="line-through text-gray-400 text-lg">
+                  ${product.originalPrice}
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-3 mb-8">
+              <span className="text-yellow-500 text-xl tracking-widest">
+                {"★".repeat(Math.floor(product.rating)) + "☆".repeat(5 - Math.floor(product.rating))}
+              </span>
+              <span className="text-gray-500 text-sm">({product.reviews} customer reviews)</span>
+            </div>
+
+            <p className="leading-relaxed text-gray-600 mb-10">
+              This premium {product.name.toLowerCase()} is perfect for your everyday needs.
+              Built with high-quality materials and designed for both style and durability.
+              Upgrade your collection today with this fantastic item!
+            </p>
+
+            <Button
+              size="lg"
+              className="w-full sm:max-w-sm rounded-full h-14 text-lg font-bold text-white border-0 hover:opacity-90 transition-opacity"
+              style={{ background: 'linear-gradient(135deg, #e94560, #f85c76)', boxShadow: '0 4px 20px rgba(233,69,96,0.4)' }}
+              onClick={() => addToCart(product)}
+            >
+              🛒 Add to Cart
+            </Button>
           </div>
-          
-          <div className="flex items-center gap-3 mb-8">
-            <span className="text-yellow-500 text-xl tracking-widest">
-              {"★".repeat(Math.floor(product.rating)) + "☆".repeat(5 - Math.floor(product.rating))}
-            </span>
-            <span className="text-muted-foreground text-sm">({product.reviews} customer reviews)</span>
-          </div>
-          
-          <p className="leading-relaxed text-muted-foreground mb-10">
-            This premium {product.name.toLowerCase()} is perfect for your everyday needs. 
-            Built with high-quality materials and designed for both style and durability. 
-            Upgrade your collection today with this fantastic item!
-          </p>
-          
-          <Button 
-            size="lg" 
-            className="w-full sm:max-w-sm rounded-full h-14 text-lg font-bold text-white border-0 hover:opacity-90 transition-opacity"
-            style={{ background: 'linear-gradient(135deg, #e94560, #f85c76)', boxShadow: '0 4px 20px rgba(233,69,96,0.4)' }}
-            onClick={() => addToCart(product)}
-          >
-            🛒 Add to Cart
-          </Button>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

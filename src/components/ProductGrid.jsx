@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import ProductCard from "./ProductCard";
 
 const products = [
@@ -29,16 +29,20 @@ const normaliseCategory = (value) => {
 
 const ProductGrid = ({ selectedCategory, setSelectedCategory, addToCart }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const activeCategory = normaliseCategory(selectedCategory);
+
+  // Stay in the same section (customer layout or public) when filtering.
+  const basePath = location.pathname.startsWith("/customer") ? "/customer" : "";
 
   const handleFilterClick = (cat) => {
     if (typeof setSelectedCategory === "function") {
       setSelectedCategory(cat);
     }
     if (cat === "All") {
-      navigate("/products");
+      navigate(`${basePath}/products`);
     } else {
-      navigate(`/products/${cat}`);
+      navigate(`${basePath}/products/${cat}`);
     }
   };
 

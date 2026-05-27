@@ -33,7 +33,7 @@ const ContactForm = () => {
 
   return (
     <div className="w-full">
-      <form onSubmit={formik.handleSubmit} className="flex flex-col gap-6">
+      <form onSubmit={formik.handleSubmit} className="flex  text-black flex-col gap-6">
         <div className="grid gap-2">
           <Label htmlFor="name">Name</Label>
           <Input

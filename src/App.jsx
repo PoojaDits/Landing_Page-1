@@ -20,17 +20,20 @@ import AdminDashboard from '@/pages/dashboard/AdminDashboard';
 import SuperAdminDashboard from '@/pages/dashboard/SuperAdminDashboard';
 import PlaceholderPage from '@/pages/dashboard/PlaceholderPage';
 import { Toaster } from 'react-hot-toast';
-import { isLoggedIn, getDashboardPath, getStoredUser, clearAuth, getUserRole } from '@/lib/role';
+import {
+  isLoggedIn,
+  getDashboardPath,
+  getStoredUser,
+  clearAuth,
+} from '@/lib/role';
 
 const ProductsPage = ({ selectedCategory, setSelectedCategory, addToCart }) => {
   const { category } = useParams();
 
-  // Keep parent state in sync with the URL param whenever it changes
   React.useEffect(() => {
     setSelectedCategory(category || 'All');
   }, [category, setSelectedCategory]);
 
-  // URL wins, then state, then "All"
   const activeCategory = category || selectedCategory || 'All';
 
   return (
@@ -42,27 +45,33 @@ const ProductsPage = ({ selectedCategory, setSelectedCategory, addToCart }) => {
   );
 };
 
+/** Send the user to their landing page (home for customer, dashboard for admins). */
 function RoleRedirect() {
   return <Navigate to={isLoggedIn() ? getDashboardPath() : '/login'} replace />;
 }
 
+/** Public shop shell – Navbar + content + Footer (no sidebar). */
 const PublicLayout = ({ totalItems, toggleCart, loggedIn, user, handleLogout }) => (
   <>
-    <Navbar totalItems={totalItems} toggleCart={toggleCart} isLoggedIn={loggedIn} user={user} onLogout={handleLogout} />
+    <Navbar
+      totalItems={totalItems}
+      toggleCart={toggleCart}
+      isLoggedIn={loggedIn}
+      user={user}
+      onLogout={handleLogout}
+    />
     <Outlet />
     <Footer />
   </>
 );
 
-const DynamicLayout = ({ loggedIn, user, totalItems, toggleCart, handleLogout, cartItems }) => {
-  if (!loggedIn) {
-    return <Navigate to="/login" replace />;
-  }
-  const role = user?.role || getUserRole();
-  if (role === 'super-admin') return <SuperAdminLayout handleLogout={handleLogout} />;
-  if (role === 'admin') return <AdminLayout handleLogout={handleLogout} />;
-  return <CustomerLayout totalItems={totalItems} cartItems={cartItems} toggleCart={toggleCart} handleLogout={handleLogout} />;
-};
+/** Home page (Hero + Categories) – shared by public AND customer layout. */
+const HomePage = ({ selectedCategory, setSelectedCategory }) => (
+  <>
+    <Hero />
+    <Categories selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
+  </>
+);
 
 export default function App() {
   const [cartItems, setCartItems] = useState([]);
@@ -76,9 +85,6 @@ export default function App() {
     setLoggedIn(isLoggedIn());
     setUser(getStoredUser());
   }, [location]);
-
-  const isDashboard = location.pathname.startsWith('/customer/') ||
-    location.pathname.startsWith('/admin/') || location.pathname.startsWith('/super-admin/');
 
   const addToCart = (product) => {
     setCartItems(prev => {
@@ -94,25 +100,65 @@ export default function App() {
   };
   const totalItems = cartItems.reduce((s, i) => s + i.quantity, 0);
   const handleLogout = () => { clearAuth(); setLoggedIn(false); setUser(null); };
+  const toggleCart = () => setIsCartOpen(prev => !prev);
 
   return (
     <>
       <Routes>
-        <Route element={<DynamicLayout loggedIn={loggedIn} user={user} totalItems={totalItems} cartItems={cartItems} toggleCart={() => setIsCartOpen(prev => !prev)} handleLogout={handleLogout} />}>
-          <Route path="/" element={<><Hero /><Categories selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} /></>} />
+        {/* ---------- AUTH ---------- */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+
+        {/* ---------- ROOT → login or landing page ---------- */}
+        <Route path="/" element={<RoleRedirect />} />
+        <Route path="/dashboard" element={<RoleRedirect />} />
+
+        {/* ---------- PUBLIC SHOP (Navbar + Footer) ---------- */}
+        <Route
+          element={
+            <PublicLayout
+              totalItems={totalItems}
+              toggleCart={toggleCart}
+              loggedIn={loggedIn}
+              user={user}
+              handleLogout={handleLogout}
+            />
+          }
+        >
+          <Route path="/home" element={<HomePage selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />} />
           <Route path="/products" element={<ProductsPage selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} addToCart={addToCart} />} />
           <Route path="/products/:category" element={<ProductsPage selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} addToCart={addToCart} />} />
           <Route path="/product/:id" element={<ProductDetail addToCart={addToCart} />} />
           <Route path="/deals" element={<Deals />} />
           <Route path="/contact" element={<Contact />} />
         </Route>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard" element={<RoleRedirect />} />
 
-        {/* Customer */}
-        <Route path="/customer" element={<CustomerRoute><CustomerLayout totalItems={totalItems} cartItems={cartItems} toggleCart={() => setIsCartOpen(prev => !prev)} handleLogout={handleLogout} /></CustomerRoute>}>
-          <Route index element={<Navigate to="/customer/dashboard" replace />} />
+        {/* ---------- CUSTOMER (sidebar layout) ---------- */}
+        <Route
+          path="/customer"
+          element={
+            <CustomerRoute>
+              <CustomerLayout
+                totalItems={totalItems}
+                cartItems={cartItems}
+                toggleCart={toggleCart}
+                handleLogout={handleLogout}
+              />
+            </CustomerRoute>
+          }
+        >
+          {/* Default landing for /customer → Home */}
+          <Route index element={<Navigate to="/customer/home" replace />} />
+
+          {/* Store pages rendered INSIDE the customer layout */}
+          <Route path="home" element={<HomePage selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />} />
+          <Route path="products" element={<ProductsPage selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} addToCart={addToCart} />} />
+          <Route path="products/:category" element={<ProductsPage selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} addToCart={addToCart} />} />
+          <Route path="product/:id" element={<ProductDetail addToCart={addToCart} />} />
+          <Route path="deals" element={<Deals />} />
+          <Route path="contact" element={<Contact />} />
+
+          {/* Dashboard pages */}
           <Route path="dashboard" element={<CustomerDashboard />} />
           <Route path="orders" element={<PlaceholderPage title="My Orders" />} />
           <Route path="wishlist" element={<PlaceholderPage title="My Wishlist" />} />
@@ -123,8 +169,15 @@ export default function App() {
           <Route path="settings" element={<PlaceholderPage title="Account Settings" />} />
         </Route>
 
-        {/* Admin */}
-        <Route path="/admin" element={<AdminRoute><AdminLayout handleLogout={handleLogout} /></AdminRoute>}>
+        {/* ---------- ADMIN ---------- */}
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminLayout handleLogout={handleLogout} />
+            </AdminRoute>
+          }
+        >
           <Route index element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="analytics" element={<PlaceholderPage title="Analytics" />} />
@@ -140,8 +193,15 @@ export default function App() {
           <Route path="settings" element={<PlaceholderPage title="Store Settings" />} />
         </Route>
 
-        {/* Super Admin */}
-        <Route path="/super-admin" element={<SuperAdminRoute><SuperAdminLayout handleLogout={handleLogout} /></SuperAdminRoute>}>
+        {/* ---------- SUPER ADMIN ---------- */}
+        <Route
+          path="/super-admin"
+          element={
+            <SuperAdminRoute>
+              <SuperAdminLayout handleLogout={handleLogout} />
+            </SuperAdminRoute>
+          }
+        >
           <Route index element={<Navigate to="/super-admin/dashboard" replace />} />
           <Route path="dashboard" element={<SuperAdminDashboard />} />
           <Route path="system" element={<PlaceholderPage title="System Health" />} />
@@ -164,9 +224,25 @@ export default function App() {
           <Route path="settings" element={<PlaceholderPage title="Global Settings" />} />
         </Route>
 
-        <Route path="*" element={<div className="min-h-[60vh] flex items-center justify-center"><div className="text-center"><h1 className="text-6xl font-bold text-gray-300">404</h1><h2 className="text-xl font-semibold text-gray-700 mt-4">Page Not Found</h2></div></div>} />
+        {/* ---------- CATCH-ALL ---------- */}
+        <Route
+          path="*"
+          element={
+            isLoggedIn()
+              ? <Navigate to={getDashboardPath()} replace />
+              : <Navigate to="/login" replace />
+          }
+        />
       </Routes>
-      {isCartOpen && <Cart cartItems={cartItems} removeFromCart={removeFromCart} updateQuantity={updateQuantity} closeCart={() => setIsCartOpen(false)} />}
+
+      {isCartOpen && (
+        <Cart
+          cartItems={cartItems}
+          removeFromCart={removeFromCart}
+          updateQuantity={updateQuantity}
+          closeCart={() => setIsCartOpen(false)}
+        />
+      )}
       <Toaster position="top-right" />
     </>
   );
