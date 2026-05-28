@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { isLoggedIn, storeLogin, getUserRole, DASHBOARD_PATHS, ROLES } from '@/lib/role';
 
-const API_URL = 'https://dummyjson.com';
+const API_URL = 'http://localhost:3001';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -59,34 +59,22 @@ export default function Login() {
     if (!validateForm()) return;
     setLoading(true);
     try {
-      // 1) Try the demo user that was created at signup (this is where the role lives)
-      const savedDemo = localStorage.getItem('demoUser');
-      if (savedDemo) {
-        const demo = JSON.parse(savedDemo);
-        if (demo.email === formData.email && demo.password === formData.password) {
-          const role = demo.role || ROLES.CUSTOMER;
-          storeLogin({
-            firstName: demo.firstName,
-            lastName: demo.lastName,
-            email: demo.email,
-            role,
-          }, 'demo-token-' + Date.now());
-          navigate(DASHBOARD_PATHS[role] || '/');
-          return;
-        }
+      // JSON SERVER LOGIN
+      const { data: users } = await axios.get(`${API_URL}/users`, {
+        params: { email: formData.email, password: formData.password }
+      });
+      
+      if (users.length === 0) {
+        throw new Error('Invalid credentials');
       }
 
-      // 2) Fallback: dummyjson login. No role info comes back, so anyone who
-      //    didn't sign up locally is treated as a regular customer.
-      const { data } = await axios.post(`${API_URL}/auth/login`, {
-        username: formData.email, password: formData.password, expiresInMins: 60,
-      });
-      const { accessToken, ...userFields } = data;
-      const role = ROLES.CUSTOMER;
-      storeLogin({ ...userFields, role }, accessToken);
-      navigate(DASHBOARD_PATHS[role] || '/');
+      const user = users[0];
+      const { password, ...userData } = user;
+      
+      storeLogin(userData, 'json-token-' + Date.now());
+      navigate(DASHBOARD_PATHS[userData.role] || '/');
     } catch (err) {
-      setMainError(err.response?.data?.message || 'Invalid credentials');
+      setMainError(err.message || 'Invalid credentials');
     } finally {
       setLoading(false);
     }
@@ -97,7 +85,7 @@ export default function Login() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white">Welcome Back</h1>
-          <p className="text-gray-400 mt-2">Sign in to your account</p>
+          <p className="text-gray-400 mt-2">Sign in with JSON Server</p>
         </div>
         {mainError && <div className="mb-6 p-4 rounded-xl text-sm" style={{ background: 'rgba(233,69,96,0.1)', border: '1px solid rgba(233,69,96,0.2)', color: '#e94560' }}>{mainError}</div>}
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -121,9 +109,13 @@ export default function Login() {
           </Button>
         </form>
         <div className="mt-6 text-center text-sm text-gray-400">
-          <Link to="#" className="font-medium" style={{ color: '#e94560' }}>Forgot Password?</Link>
-          <span className="mx-2">·</span>
-          Don&apos;t have an account? <Link to="/signup" className="font-medium" style={{ color: '#e94560' }}>Sign up</Link>
+          <div className="p-3 rounded-lg bg-white/5 mb-3 text-xs">
+            <p className="text-gray-300 font-semibold mb-1">Demo Accounts:</p>
+            <p>super@admin.com / super123</p>
+            <p>admin@store.com / admin123</p>
+            <p>bob@customer.com / customer123</p>
+          </div>
+          Don't have an account? <Link to="/signup" className="font-medium" style={{ color: '#e94560' }}>Sign up</Link>
         </div>
       </div>
     </div>

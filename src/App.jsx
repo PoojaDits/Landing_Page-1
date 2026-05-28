@@ -19,6 +19,7 @@ import CustomerDashboard from '@/pages/dashboard/CustomerDashboard';
 import AdminDashboard from '@/pages/dashboard/AdminDashboard';
 import SuperAdminDashboard from '@/pages/dashboard/SuperAdminDashboard';
 import AllStores from '@/pages/dashboard/AllStores';
+import AllUsers from '@/pages/dashboard/Users';
 import PlaceholderPage from '@/pages/dashboard/PlaceholderPage';
 import { Toaster } from 'react-hot-toast';
 import {
@@ -26,6 +27,9 @@ import {
   getDashboardPath,
   getStoredUser,
   clearAuth,
+  isImpersonating,
+  getImpersonator,
+  stopImpersonation,
 } from '@/lib/role';
 
 const ProductsPage = ({ selectedCategory, setSelectedCategory, addToCart }) => {
@@ -74,6 +78,22 @@ const HomePage = ({ selectedCategory, setSelectedCategory }) => (
   </>
 );
 
+// Impersonation Banner
+const ImpersonationBanner = () => {
+  if (!isImpersonating()) return null;
+  const admin = getImpersonator();
+  const handleStop = () => {
+    stopImpersonation();
+    window.location.href = '/super-admin/dashboard';
+  };
+  return (
+    <div className="bg-amber-500 text-black text-sm font-medium px-4 py-2 flex items-center justify-between sticky top-0 z-[100]">
+      <span>🔒 You are impersonating as <strong>{admin?.firstName} {admin?.lastName}</strong>. Actions are logged.</span>
+      <button onClick={handleStop} className="bg-black text-white px-3 py-1 rounded-md text-xs font-bold hover:bg-gray-800">Stop Impersonating</button>
+    </div>
+  );
+};
+
 export default function App() {
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -105,6 +125,7 @@ export default function App() {
 
   return (
     <>
+      <ImpersonationBanner />
       <Routes>
         {/* ---------- AUTH ---------- */}
         <Route path="/login" element={<Login />} />
@@ -210,8 +231,8 @@ export default function App() {
           <Route path="reports" element={<PlaceholderPage title="Global Reports" />} />
           <Route path="stores" element={<AllStores />} />
           <Route path="stores/new" element={<PlaceholderPage title="Add Store" />} />
-          <Route path="users" element={<PlaceholderPage title="All Users" />} />
-          <Route path="admins" element={<PlaceholderPage title="Admins" />} />
+          <Route path="users" element={<AllUsers />} />
+          <Route path="admins" element={<AllUsers />} />
           <Route path="admins/new" element={<PlaceholderPage title="Add Admin" />} />
           <Route path="roles" element={<PlaceholderPage title="Roles & Permissions" />} />
           <Route path="products" element={<PlaceholderPage title="All Products" />} />

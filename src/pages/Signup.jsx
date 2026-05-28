@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { isLoggedIn, getDashboardPath, ROLES } from '@/lib/role';
 
-const API_URL = 'https://dummyjson.com';
+const API_URL = 'http://localhost:3001';
 
 const roles = [
   { value: ROLES.CUSTOMER, label: 'Customer' },
@@ -61,14 +61,20 @@ export default function Signup() {
     if (!validateForm()) return;
     setLoading(true);
     try {
-      localStorage.setItem('demoUser', JSON.stringify({
-        email: formData.email, password: formData.password,
-        firstName: formData.firstName, lastName: formData.lastName, role: formData.role,
-      }));
-      await axios.post(`${API_URL}/users/add`, formData);
+      // Check if user exists in JSON Server
+      const { data: existing } = await axios.get(`${API_URL}/users`, {
+        params: { email: formData.email }
+      });
+      
+      if (existing.length > 0) {
+        throw new Error('Email already registered');
+      }
+
+      // Create user in JSON Server
+      await axios.post(`${API_URL}/users`, formData);
       navigate('/login');
     } catch (err) {
-      setMainError(err.response?.data?.message || 'Signup failed.');
+      setMainError(err.response?.data?.message || err.message || 'Signup failed.');
     } finally {
       setLoading(false);
     }
@@ -81,12 +87,12 @@ export default function Signup() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white">Create Account</h1>
-          <p className="text-gray-400 mt-2">Join our platform today</p>
+          <p className="text-gray-400 mt-2">Join via JSON Server</p>
         </div>
         {mainError && <div className="mb-6 p-4 rounded-xl text-sm" style={{ background: 'rgba(233,69,96,0.1)', border: '1px solid rgba(233,69,96,0.2)', color: '#e94560' }}>{mainError}</div>}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <Label className="text-sm font-semibold text-gray-300 mb-3 block"></Label>
+            <Label className="text-sm font-semibold text-gray-300 mb-3 block">Select Role</Label>
             <div className="grid grid-cols-3 gap-2">
               {roles.map(r => (
                 <button key={r.value} type="button" onClick={() => setFormData(prev => ({ ...prev, role: r.value }))}
