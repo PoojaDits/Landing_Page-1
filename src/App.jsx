@@ -18,6 +18,7 @@ import SuperAdminLayout from '@/layouts/SuperAdminLayout';
 import CustomerDashboard from '@/pages/dashboard/CustomerDashboard';
 import AdminDashboard from '@/pages/dashboard/AdminDashboard';
 import SuperAdminDashboard from '@/pages/dashboard/SuperAdminDashboard';
+import AllStores from '@/pages/dashboard/AllStores';
 import PlaceholderPage from '@/pages/dashboard/PlaceholderPage';
 import { Toaster } from 'react-hot-toast';
 import {
@@ -207,7 +208,7 @@ export default function App() {
           <Route path="system" element={<PlaceholderPage title="System Health" />} />
           <Route path="analytics" element={<PlaceholderPage title="Platform Analytics" />} />
           <Route path="reports" element={<PlaceholderPage title="Global Reports" />} />
-          <Route path="stores" element={<PlaceholderPage title="All Stores" />} />
+          <Route path="stores" element={<AllStores />} />
           <Route path="stores/new" element={<PlaceholderPage title="Add Store" />} />
           <Route path="users" element={<PlaceholderPage title="All Users" />} />
           <Route path="admins" element={<PlaceholderPage title="Admins" />} />

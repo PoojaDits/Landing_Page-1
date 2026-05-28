@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { 
   Globe, 
   Store, 
@@ -16,7 +17,6 @@ import {
 } from 'lucide-react';
 
 const platformStats = [
-
   {
 label: 'stores',
 value: '42',
@@ -60,6 +60,7 @@ bg: 'bg-indigo-50',
 description: 'Gross Merchandise Value'
 }
 ];
+
 const storePerformance = [
   { name: 'Fashion Hub', owner: 'Alice Johnson', sales: '$45,200', status: 'Active', growth: '+12%' },
   { name: 'Tech World', owner: 'Bob Smith', sales: '$120,500', status: 'Active', growth: '+24%' },
@@ -77,7 +78,7 @@ export default function SuperAdminDashboard() {
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
       
-      
+      {/* Header with Search */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -102,10 +103,10 @@ export default function SuperAdminDashboard() {
         </div>
       </div>
 
-      
+      {/* Platform Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {platformStats.map((stat, i) => (
-          <div key={i} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all group overflow-hidden relative">
+          <Link to={stat.href} key={i} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all group overflow-hidden relative">
             {/* Background Accent */}
             <div className={`absolute -right-4 -top-4 w-24 h-24 rounded-full opacity-5 group-hover:opacity-10 transition-opacity ${stat.bg.replace('50', '500')}`}></div>
             
@@ -129,10 +130,11 @@ export default function SuperAdminDashboard() {
                 {stat.description}
               </p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 
+        
     </div>
   );
 }
