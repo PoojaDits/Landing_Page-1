@@ -70,7 +70,7 @@ const PublicLayout = ({ totalItems, toggleCart, loggedIn, user, handleLogout }) 
   </>
 );
 
-/** Home page (Hero + Categories) – shared by public AND customer layout. */
+
 const HomePage = ({ selectedCategory, setSelectedCategory }) => (
   <>
     <Hero />
@@ -78,7 +78,7 @@ const HomePage = ({ selectedCategory, setSelectedCategory }) => (
   </>
 );
 
-// Impersonation Banner
+
 const ImpersonationBanner = () => {
   if (!isImpersonating()) return null;
   const admin = getImpersonator();
@@ -127,15 +127,14 @@ export default function App() {
     <>
       <ImpersonationBanner />
       <Routes>
-        {/* ---------- AUTH ---------- */}
+
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* ---------- ROOT → login or landing page ---------- */}
+
         <Route path="/" element={<RoleRedirect />} />
         <Route path="/dashboard" element={<RoleRedirect />} />
 
-        {/* ---------- PUBLIC SHOP (Navbar + Footer) ---------- */}
         <Route
           element={
             <PublicLayout
@@ -155,7 +154,6 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
         </Route>
 
-        {/* ---------- CUSTOMER (sidebar layout) ---------- */}
         <Route
           path="/customer"
           element={
@@ -169,10 +167,9 @@ export default function App() {
             </CustomerRoute>
           }
         >
-          {/* Default landing for /customer → Home */}
           <Route index element={<Navigate to="/customer/home" replace />} />
 
-          {/* Store pages rendered INSIDE the customer layout */}
+
           <Route path="home" element={<HomePage selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />} />
           <Route path="products" element={<ProductsPage selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} addToCart={addToCart} />} />
           <Route path="products/:category" element={<ProductsPage selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} addToCart={addToCart} />} />
@@ -180,7 +177,7 @@ export default function App() {
           <Route path="deals" element={<Deals />} />
           <Route path="contact" element={<Contact />} />
 
-          {/* Dashboard pages */}
+          
           <Route path="dashboard" element={<CustomerDashboard />} />
           <Route path="orders" element={<PlaceholderPage title="My Orders" />} />
           <Route path="wishlist" element={<PlaceholderPage title="My Wishlist" />} />
@@ -191,7 +188,7 @@ export default function App() {
           <Route path="settings" element={<PlaceholderPage title="Account Settings" />} />
         </Route>
 
-        {/* ---------- ADMIN ---------- */}
+        
         <Route
           path="/admin"
           element={
@@ -215,7 +212,7 @@ export default function App() {
           <Route path="settings" element={<PlaceholderPage title="Store Settings" />} />
         </Route>
 
-        {/* ---------- SUPER ADMIN ---------- */}
+        
         <Route
           path="/super-admin"
           element={
@@ -246,7 +243,7 @@ export default function App() {
           <Route path="settings" element={<PlaceholderPage title="Global Settings" />} />
         </Route>
 
-        {/* ---------- CATCH-ALL ---------- */}
+        
         <Route
           path="*"
           element={

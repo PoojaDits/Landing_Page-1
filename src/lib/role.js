@@ -19,10 +19,9 @@ export const DASHBOARD_PATHS = {
 export function getStoredUser() {
     try { 
         return JSON.parse(localStorage.getItem('myUser')); 
-
     } catch {
          return null; 
-        }
+    }
 }
 
 export function getUserRole() {
@@ -37,11 +36,14 @@ export function isLoggedIn() {
 export function storeLogin(userData, token) {
     localStorage.setItem('myToken', token);
     localStorage.setItem('myUser', JSON.stringify(userData));
+
+    localStorage.removeItem('impersonator');
 }
 
 export function clearAuth() {
     localStorage.removeItem('myToken');
     localStorage.removeItem('myUser');
+    localStorage.removeItem('impersonator');
 }
 
 export function hasRole(...roles) {
@@ -50,4 +52,39 @@ export function hasRole(...roles) {
 
 export function getDashboardPath() {
     return DASHBOARD_PATHS[getUserRole()] || '/';
+}
+
+
+export function startImpersonation(targetUser) {
+    const currentUser = getStoredUser();
+    if (!currentUser || currentUser.role !== ROLES.SUPER_ADMIN) {
+        throw new Error('Only Super Admin can impersonate');
+    }
+    
+    localStorage.setItem('impersonator', JSON.stringify(currentUser));
+    
+    storeLogin(targetUser, 'impersonate-token-' + Date.now());
+}
+
+export function stopImpersonation() {
+    const original = localStorage.getItem('impersonator');
+    if (original) {
+        const admin = JSON.parse(original);
+        localStorage.removeItem('impersonator');
+        storeLogin(admin, 'restored-token-' + Date.now());
+        return true;
+    }
+    return false;
+}
+
+export function isImpersonating() {
+    return !!localStorage.getItem('impersonator');
+}
+
+export function getImpersonator() {
+    try {
+        return JSON.parse(localStorage.getItem('impersonator'));
+    } catch {
+        return null;
+    }
 }

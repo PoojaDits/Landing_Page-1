@@ -59,7 +59,7 @@ export default function Login() {
     if (!validateForm()) return;
     setLoading(true);
     try {
-      // JSON SERVER LOGIN
+     
       const { data: users } = await axios.get(`${API_URL}/users`, {
         params: { email: formData.email, password: formData.password }
       });
@@ -109,12 +109,6 @@ export default function Login() {
           </Button>
         </form>
         <div className="mt-6 text-center text-sm text-gray-400">
-          <div className="p-3 rounded-lg bg-white/5 mb-3 text-xs">
-            <p className="text-gray-300 font-semibold mb-1">Demo Accounts:</p>
-            <p>super@admin.com / super123</p>
-            <p>admin@store.com / admin123</p>
-            <p>bob@customer.com / customer123</p>
-          </div>
           Don't have an account? <Link to="/signup" className="font-medium" style={{ color: '#e94560' }}>Sign up</Link>
         </div>
       </div>
