@@ -12,7 +12,7 @@ const BG = 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f3460 100%)';
 const SB = 'rgba(15, 23, 42, 0.95)';
 const HB = 'rgba(15, 23, 42, 0.9)';
 const BD = 'rgba(255,255,255,0.06)';
-const AC = '#3b82f6';   // blue accent for admin
+const AC = '#3b82f6';   
 const ACL = '#60a5fa';
 const MUTED = 'rgba(255,255,255,0.3)';
 
@@ -151,7 +151,7 @@ export default function AdminLayout({ handleLogout }) {
                 </div>
             </aside>
 
-            {/* ---------- Main ---------- */}
+            
             <div className="flex-1 flex flex-col min-w-0">
                 <header
                     className="sticky top-0 z-30 h-14 flex items-center justify-between px-4 sm:px-6 shrink-0 border-b"

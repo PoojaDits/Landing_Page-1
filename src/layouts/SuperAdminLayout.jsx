@@ -13,7 +13,7 @@ const BG = 'linear-gradient(135deg, #1a0b2e 0%, #2d1b4e 50%, #0f3460 100%)';
 const SB = 'rgba(26, 11, 46, 0.95)';
 const HB = 'rgba(26, 11, 46, 0.9)';
 const BD = 'rgba(255,255,255,0.06)';
-const AC = '#a855f7';   // purple accent for super-admin
+const AC = '#a855f7';   
 const ACL = '#c084fc';
 const MUTED = 'rgba(255,255,255,0.3)';
 
@@ -89,7 +89,7 @@ export default function SuperAdminLayout({ handleLogout }) {
                 )}
                 style={{ background: SB, borderRight: `1px solid ${BD}` }}
             >
-                {/* Brand */}
+                
                 <div className="flex items-center justify-between h-14 px-4 border-b" style={{ borderColor: BD }}>
                     <Link to="/super-admin/dashboard" className="flex items-center gap-2">
                         <div
@@ -108,7 +108,7 @@ export default function SuperAdminLayout({ handleLogout }) {
                     </button>
                 </div>
 
-                {/* Nav */}
+                
                 <nav className="flex-1 overflow-y-auto py-2 px-2 space-y-5">
                     {sections.map(sec => (
                         <div key={sec.label}>
@@ -146,7 +146,7 @@ export default function SuperAdminLayout({ handleLogout }) {
                     ))}
                 </nav>
 
-                {/* Footer */}
+                
                 <div className="border-t p-2 space-y-0.5" style={{ borderColor: BD }}>
                     <Link
                         to="/super-admin/settings"
@@ -164,7 +164,7 @@ export default function SuperAdminLayout({ handleLogout }) {
                 </div>
             </aside>
 
-            {/* ---------- Main ---------- */}
+            
             <div className="flex-1 flex flex-col min-w-0">
                 <header
                     className="sticky top-0 z-30 h-14 flex items-center justify-between px-4 sm:px-6 shrink-0 border-b"
