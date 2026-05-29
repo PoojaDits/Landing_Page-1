@@ -5,7 +5,8 @@ import { Users, Shield, UserCheck, Search, LogIn } from 'lucide-react';
 import { startImpersonation, getUserRole, ROLES, DASHBOARD_PATHS } from '@/lib/role';
 import toast from 'react-hot-toast';
 
-const API_URL = 'http://localhost:3001';
+// Updated to use the Vite proxy
+const API_URL = '/api';
 
 export default function AllUsers() {
   const [users, setUsers] = useState([]);
@@ -39,7 +40,6 @@ export default function AllUsers() {
       startImpersonation(userData);
       toast.success(`Now impersonating ${user.firstName} ${user.lastName}`);
       
-    [[[]]]
       setTimeout(() => {
         window.location.href = DASHBOARD_PATHS[user.role] || '/';
       }, 500);

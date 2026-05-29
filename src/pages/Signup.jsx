@@ -7,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { isLoggedIn, getDashboardPath, ROLES } from '@/lib/role';
 
-const API_URL = 'http://localhost:3001';
+// Updated to use the Vite proxy
+const API_URL = '/api';
 
 const roles = [
   { value: ROLES.CUSTOMER, label: 'Customer' },

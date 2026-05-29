@@ -8,14 +8,14 @@ import * as Yup from 'yup';
 import toast from 'react-hot-toast';
 
 
-const API_URL = 'https://dummyjson.com';
+const API_URL = '/api';
 
 
 export function useCart() {
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-++
+
   function addToCart(product) {
     const alreadyInCart = cartItems.find(item => item.id === product.id);
 
@@ -176,41 +176,26 @@ export function useLoginForm() {
     e.preventDefault();
     setMainError('');
 
-    if (!validateForm()) return; 
+    if (!validateForm()) return;
 
     setLoading(true);
     try {
-      
-      const savedDemoUser = localStorage.getItem('demoUser');
-      if (savedDemoUser) {
-        const demoUser = JSON.parse(savedDemoUser);
-        if (demoUser.email === formData.email && demoUser.password === formData.password) {
-          const fakeToken = 'demo-token-' + Date.now();
-          localStorage.setItem('myToken', fakeToken);
-          localStorage.setItem('myUser', JSON.stringify({
-            firstName: demoUser.firstName,
-            lastName: demoUser.lastName,
-            email: demoUser.email,
-          }));
-          navigate('/');
-          return;
-        }
-      }
-
-    
-      const response = await axios.post(`${API_URL}/auth/login`, {
-        username: formData.email,
-        password: formData.password,
-        expiresInMins: 60,
+      const { data: users } = await axios.get(`${API_URL}/users`, {
+        params: { email: formData.email, password: formData.password },
       });
 
-      const { accessToken, ...userData } = response.data;
-      localStorage.setItem('myToken', accessToken);
+      if (!users || users.length === 0) {
+        throw new Error('Invalid credentials or user not found');
+      }
+
+      const user = users[0];
+      const { password, ...userData } = user;
+      localStorage.setItem('myToken', 'json-token-' + Date.now());
       localStorage.setItem('myUser', JSON.stringify(userData));
       navigate('/');
 
     } catch (err) {
-      const message = err.response?.data?.message || 'Invalid credentials or user not found';
+      const message = err.response?.data?.message || err.message || 'Invalid credentials or user not found';
       setMainError(message);
     } finally {
       setLoading(false);
@@ -305,16 +290,13 @@ export function useSignupForm() {
 
     setLoading(true);
     try {
-      
-      localStorage.setItem('demoUser', JSON.stringify({
-        email: formData.email,
-        password: formData.password,
+      await axios.post(`${API_URL}/users`, {
         firstName: formData.firstName,
         lastName: formData.lastName,
-      }));
-
-      
-      await axios.post(`${API_URL}/users/add`, formData);
+        email: formData.email,
+        password: formData.password,
+        role: 'customer',
+      });
       navigate('/login');
 
     } catch (err) {

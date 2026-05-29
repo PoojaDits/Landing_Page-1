@@ -7,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { isLoggedIn, storeLogin, getUserRole, DASHBOARD_PATHS, ROLES } from '@/lib/role';
 
-const API_URL = 'http://localhost:3001';
+// Updated to use the Vite proxy
+const API_URL = '/api';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -59,22 +60,21 @@ export default function Login() {
     if (!validateForm()) return;
     setLoading(true);
     try {
-     
       const { data: users } = await axios.get(`${API_URL}/users`, {
         params: { email: formData.email, password: formData.password }
       });
-      
+
       if (users.length === 0) {
         throw new Error('Invalid credentials');
       }
 
       const user = users[0];
       const { password, ...userData } = user;
-      
+
       storeLogin(userData, 'json-token-' + Date.now());
       navigate(DASHBOARD_PATHS[userData.role] || '/');
     } catch (err) {
-      setMainError(err.message || 'Invalid credentials');
+      setMainError(err.response?.data?.message || err.message || 'Invalid credentials');
     } finally {
       setLoading(false);
     }

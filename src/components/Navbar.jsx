@@ -23,7 +23,6 @@ const Navbar = ({ totalItems, toggleCart, isLoggedIn, user }) => {
 
   return (
     <nav className="bg-[#1a1a2e] text-white px-4 h-16 flex items-center justify-between sticky top-0 z-50 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.3),0_4px_6px_-2px_rgba(0,0,0,0.15)]">
-
       <Button
         variant="ghost"
         size="icon"
@@ -33,11 +32,11 @@ const Navbar = ({ totalItems, toggleCart, isLoggedIn, user }) => {
       >
         <span className="text-2xl">☰</span>
       </Button>
-      
+
       <div className="text-xl md:text-2xl font-extrabold text-[#e94560] select-none">
         Shop<span className="text-white">Wave</span>
       </div>
-    
+
       <ul
         className={`
           list-none flex-col items-center gap-6 w-full absolute left-0 top-16 bg-[#1a1a2e] py-4 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.3)] z-[49]
@@ -56,7 +55,7 @@ const Navbar = ({ totalItems, toggleCart, isLoggedIn, user }) => {
           </Link>
         </li>
         <li>
-          <Link to="/Deals" onClick={() => setMenuOpen(false)} className="text-gray-300 no-underline font-medium transition-colors duration-200 hover:text-[#e94560]">
+          <Link to="/deals" onClick={() => setMenuOpen(false)} className="text-gray-300 no-underline font-medium transition-colors duration-200 hover:text-[#e94560]">
             Deals
           </Link>
         </li>
@@ -66,15 +65,15 @@ const Navbar = ({ totalItems, toggleCart, isLoggedIn, user }) => {
           </Link>
         </li>
       </ul>
-      
+
       <div className="flex items-center gap-3">
         {isLoggedIn && (
           <DropdownMenu>
-            
-            <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="text-white rounded-full hover:bg-white/10 hover:text-white" />}>
-              <FaUserCircle size={24} />
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-white rounded-full hover:bg-white/10 hover:text-white">
+                <FaUserCircle size={24} />
+              </Button>
             </DropdownMenuTrigger>
-            
             <DropdownMenuContent align="end" className="w-56 mt-2 z-[100] bg-white text-black">
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">

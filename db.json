@@ -6,7 +6,7 @@
             "lastName": "Doe",
             "email": "johndoe@example.com",
             "password": "Happyme31@",
-            "role": "SuperAdmin"
+            "role": "super_admin"
         },
         {
             "id": 2,
@@ -30,7 +30,7 @@
             "lastName": "Doe",
             "email": "carol@example.com",
             "password": "Happyme31@",
-            "role": "SuperAdmin"
+            "role": "super_admin"
         },
         {
             "id": 5,
@@ -38,7 +38,7 @@
             "lastName": "Tennison",
             "email": "robert@example.com",
             "password": "Happyme31@",
-            "role": "SuperAdmin"
+            "role": "super_admin"
         }
     ],
     "products": [],
