@@ -6,16 +6,7 @@ import {
   FaInstagram,
   FaLinkedin,
 } from 'react-icons/fa'
-
-interface SocialLink {
-  icon: React.ReactNode
-  href: string
-}
-
-interface FooterLink {
-  label: string
-  to: string
-}
+import type { SocialLink, FooterLink } from '@/types'
 
 const Footer: React.FC = () => {
   const socialLinks: SocialLink[] = [

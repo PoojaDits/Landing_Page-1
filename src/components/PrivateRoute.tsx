@@ -6,12 +6,7 @@ import {
   DASHBOARD_PATHS,
   ROLES,
 } from '@/lib/role'
-import type { Role } from '@/types'
-
-interface PrivateRouteProps {
-  children: React.ReactNode
-  allowedRoles?: Role[]
-}
+import type { PrivateRouteProps, RoleRouteProps } from '@/types'
 
 export default function PrivateRoute({
   children,
@@ -38,11 +33,7 @@ export default function PrivateRoute({
   return children
 }
 
-interface CustomerRouteProps {
-  children: React.ReactNode
-}
-
-export function CustomerRoute({ children }: CustomerRouteProps): React.ReactNode {
+export function CustomerRoute({ children }: RoleRouteProps): React.ReactNode {
   return (
     <PrivateRoute allowedRoles={[ROLES.CUSTOMER]}>
       {children}
@@ -50,11 +41,7 @@ export function CustomerRoute({ children }: CustomerRouteProps): React.ReactNode
   )
 }
 
-interface AdminRouteProps {
-  children: React.ReactNode
-}
-
-export function AdminRoute({ children }: AdminRouteProps): React.ReactNode {
+export function AdminRoute({ children }: RoleRouteProps): React.ReactNode {
   return (
     <PrivateRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPER_ADMIN]}>
       {children}
@@ -62,13 +49,9 @@ export function AdminRoute({ children }: AdminRouteProps): React.ReactNode {
   )
 }
 
-interface SuperAdminRouteProps {
-  children: React.ReactNode
-}
-
 export function SuperAdminRoute({
   children,
-}: SuperAdminRouteProps): React.ReactNode {
+}: RoleRouteProps): React.ReactNode {
   return (
     <PrivateRoute allowedRoles={[ROLES.SUPER_ADMIN]}>
       {children}

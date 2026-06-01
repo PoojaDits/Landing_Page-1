@@ -1,34 +1,24 @@
-/**
- * User and Authentication Types
- */
+
+
+import type { Role } from './common'
 
 export interface User {
-  id: string;
-  email: string;
-  name?: string;
-  firstName?: string;
-  lastName?: string;
-  password?: string;
-  role: 'customer' | 'admin' | 'super_admin';
-  createdAt?: string;
-  updatedAt?: string;
+  id: string
+  email: string
+  name?: string
+  firstName?: string
+  lastName?: string
+  password?: string
+  role: Role
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface AuthResponse {
-  user: User;
-  token: string;
-}
-
-export interface LoginCredentials {
-  email: string;
-  password: string;
-}
-
-export interface SignupCredentials extends LoginCredentials {
-  name: string;
-  confirmPassword: string;
+  user: User
+  token: string
 }
 
 export interface FormErrors {
-  [key: string]: string;
+  [key: string]: string
 }

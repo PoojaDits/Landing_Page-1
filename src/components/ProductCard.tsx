@@ -3,12 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import type { CartProduct, Product } from '@/types'
-
-interface ProductCardProps {
-  product: Product
-  addToCart: (product: CartProduct) => void
-}
+import type { ProductCardProps } from '@/types'
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart }) => {
   const navigate = useNavigate()

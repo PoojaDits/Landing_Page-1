@@ -1,14 +1,8 @@
 import React from 'react'
 import ProductGrid from './ProductGrid'
-import type { Category, CartProduct } from '@/types'
+import type { ProductGridProps } from '@/types'
 
-interface ProductPageProps {
-  selectedCategory?: Category
-  setSelectedCategory?: (category: Category) => void
-  addToCart: (product: CartProduct) => void
-}
-
-const ProductPage: React.FC<ProductPageProps> = ({
+const ProductPage: React.FC<ProductGridProps> = ({
   selectedCategory,
   setSelectedCategory,
   addToCart,
