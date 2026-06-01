@@ -30,7 +30,7 @@
             "lastName": "Doe",
             "email": "carol@example.com",
             "password": "Happyme31@",
-            "role": "super_admin"
+            "role": "customer"
         },
         {
             "id": 5,
@@ -38,7 +38,7 @@
             "lastName": "Tennison",
             "email": "robert@example.com",
             "password": "Happyme31@",
-            "role": "super_admin"
+            "role": "admin"
         }
     ],
     "products": [],
