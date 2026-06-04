@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { startImpersonation, DASHBOARD_PATHS, ROLES, getStoredUser } from '@/lib/role'
-import type { User } from '@/types'
+import type { User  } from '@/types'
 
 const users: User[] = [
   {

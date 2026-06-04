@@ -9,6 +9,10 @@ const categories: Category[] = [
   'Electronics',
   'Footwear',
   'Accessories',
+  'Clothes',
+  'Perfumes',
+  'Bags',
+  'Makeup',
   'Kitchen',
   'Sports',
 ]
@@ -20,8 +24,7 @@ const normaliseCategory = (value: string | undefined): Category => {
   const match = categories.find((c) => c.toLowerCase() === String(v).toLowerCase())
   return match || 'All'
 }
-
-// ── Lazy-reveal wrapper ─────────────────────────────────────────────────────
+ 
 const LazyCard: React.FC<{ children: React.ReactNode; index: number }> = ({ children, index }) => {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
@@ -51,7 +54,6 @@ const LazyCard: React.FC<{ children: React.ReactNode; index: number }> = ({ chil
   )
 }
 
-// ── Skeleton card ───────────────────────────────────────────────────────────
 const SkeletonCard: React.FC = () => (
   <div className="rounded-xl overflow-hidden bg-white/5 border border-white/10 animate-pulse">
     <div className="h-[140px] md:h-[200px] bg-white/10" />
@@ -63,8 +65,7 @@ const SkeletonCard: React.FC = () => (
     </div>
   </div>
 )
-
-// ── Pagination controls ─────────────────────────────────────────────────────
+ 
 interface PaginationProps {
   currentPage: number
   totalPages: number
@@ -126,7 +127,6 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onGoTo
   )
 }
 
-// ── Main component ──────────────────────────────────────────────────────────
 interface ProductGridProps {
   selectedCategory?: Category
   setSelectedCategory?: (category: Category) => void
@@ -170,7 +170,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   return (
     <section className="px-4 py-8 md:py-[60px] md:px-[40px] flex-1 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
 
-      {/* Header */}
+      
       <h2 className="text-center text-[1.5rem] mb-1.5 text-[#b9b9bd]">
         {activeCategory !== 'All' ? `${activeCategory} Products` : 'All Products'}
       </h2>
@@ -178,13 +178,13 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         Browse our curated collection
       </p>
 
-      {/* Product count */}
+      
       <p className="text-center text-[#888] text-xs mb-5">
         Showing <span className="text-[#e94560] font-semibold">{visibleProducts.length}</span> of{' '}
         <span className="font-semibold text-gray-400">{allFiltered.length}</span> products
       </p>
 
-      {/* Category filters */}
+      
       <div className="flex gap-2.5 overflow-x-auto whitespace-nowrap py-1 mb-5 pb-4 md:justify-center md:overflow-x-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {categories.map((cat) => (
           <button
@@ -201,7 +201,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         ))}
       </div>
 
-      {/* Grid */}
+      
       {allFiltered.length === 0 ? (
         <p className="text-center text-gray-400 mt-10">
           No products found in "{activeCategory}".
@@ -215,13 +215,13 @@ const ProductGrid: React.FC<ProductGridProps> = ({
               </LazyCard>
             ))}
 
-            {/* Loading skeletons */}
+            
             {isLoading &&
               Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={`skel-${i}`} />)
             }
           </div>
 
-          {/* Infinite scroll sentinel */}
+          
           <div ref={sentinelRef} className="h-10 mt-4 flex items-center justify-center">
             {isLoading && (
               <div className="flex gap-2">
@@ -241,7 +241,6 @@ const ProductGrid: React.FC<ProductGridProps> = ({
             )}
           </div>
 
-          {/* Pagination controls */}
           <Pagination currentPage={currentPage} totalPages={totalPages} onGoTo={goToPage} />
         </>
       )}

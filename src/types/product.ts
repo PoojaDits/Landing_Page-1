@@ -10,7 +10,8 @@ export interface Product {
   originalPrice?: number;
   rating: number;
   reviews: number;
-  emoji: string;
+  emoji?: string;
+  image?: string;
   badge?: string;
   description?: string;
 }
@@ -19,4 +20,14 @@ export interface CartProduct extends Product {
   quantity: number;
 }
 
-export type Category = 'All' | 'Electronics' | 'Footwear' | 'Accessories' | 'Kitchen' | 'Sports';
+export type Category =
+  | 'All'
+  | 'Electronics'
+  | 'Footwear'
+  | 'Accessories'
+  | 'Kitchen'
+  | 'Sports'
+  | 'Clothes'
+  | 'Perfumes'
+  | 'Bags'
+  | 'Makeup';

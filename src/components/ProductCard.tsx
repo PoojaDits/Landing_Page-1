@@ -22,8 +22,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart }) => {
       className="flex flex-col cursor-pointer overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 bg-white"
       onClick={() => navigate(`${basePath}/product/${product.id}`)}
     >
-      <div className="h-[140px] md:h-[200px] bg-muted/30 flex items-center justify-center text-[2.5rem] md:text-[4rem] relative">
-        <span>{product.emoji}</span>
+      <div className="h-[140px] md:h-[200px] bg-muted/30 flex items-center justify-center text-[2.5rem] md:text-[4rem] relative overflow-hidden">
+        {product.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <span>{product.emoji || '📦'}</span>
+        )}
 
         {product.badge && (
           <Badge className="absolute top-2 left-2 px-2 py-0 text-[0.65rem] font-bold">

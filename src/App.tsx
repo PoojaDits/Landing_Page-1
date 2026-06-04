@@ -75,7 +75,7 @@ const ProductsPage: React.FC<ProductsPageProps> = ({
   )
 }
 
-/** Send the user to their landing page (home for customer, dashboard for admins). */
+
 function RoleRedirect(): ReactNode {
   return (
     <Navigate
@@ -92,7 +92,6 @@ interface PublicLayoutProps {
   user: User | null
 }
 
-/** Public shop shell – Navbar + content + Footer (no sidebar). */
 const PublicLayout: React.FC<PublicLayoutProps> = ({
   totalItems,
   toggleCart,
