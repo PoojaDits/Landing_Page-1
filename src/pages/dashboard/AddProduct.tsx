@@ -20,7 +20,6 @@ const AddProduct: React.FC = () => {
     }
     reader.readAsDataURL(file)
   }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const product = {
@@ -43,7 +42,7 @@ const AddProduct: React.FC = () => {
       toast.success('Product added')
       navigate('/admin/products')
     } catch (err) {
-      // eslint-disable-next-line no-console
+      
       console.error(err)
       toast.error('Could not add product')
     }
@@ -72,11 +71,11 @@ const AddProduct: React.FC = () => {
         <label className="block text-sm text-gray-300">Price</label>
         <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} className="w-full p-2 rounded mb-3 text-black" />
 
-        <label className="block text-sm text-gray-300">Rating</label>
+        {/* <label className="block text-sm text-gray-300">Rating</label>
         <input type="number" value={rating} onChange={(e) => setRating(e.target.value)} min={0} max={5} className="w-full p-2 rounded mb-3 text-black" />
 
         <label className="block text-sm text-gray-300">Reviews</label>
-        <input type="number" value={reviews} onChange={(e) => setReviews(e.target.value)} className="w-full p-2 rounded mb-3 text-black" />
+        <input type="number" value={reviews} onChange={(e) => setReviews(e.target.value)} className="w-full p-2 rounded mb-3 text-black" /> */}
 
         <label className="block text-sm text-gray-300">Description</label>
         <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full p-2 rounded mb-3 text-black" />
@@ -92,7 +91,6 @@ const AddProduct: React.FC = () => {
         {imageDataUrl && (
           <img src={imageDataUrl} alt="preview" className="w-48 h-48 object-cover mb-3 rounded" />
         )}
-
         <button type="submit" className="bg-[#e94560] text-white px-4 py-2 rounded">Save Product</button>
       </form>
     </div>

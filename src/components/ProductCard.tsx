@@ -24,7 +24,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart }) => {
     >
       <div className="h-[140px] md:h-[200px] bg-muted/30 flex items-center justify-center text-[2.5rem] md:text-[4rem] relative overflow-hidden">
         {product.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
+          
           <img
             src={product.image}
             alt={product.name}
