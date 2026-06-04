@@ -34,6 +34,8 @@ import AllStores from '@/pages/dashboard/AllStores'
 import StoreDetails from '@/pages/dashboard/StoreDetails'
 import AllUsers from '@/pages/dashboard/Users'
 import PlaceholderPage from '@/pages/dashboard/PlaceholderPage'
+import ProductsManagement from '@/pages/dashboard/ProductsManagement'
+import AddProduct from '@/pages/dashboard/AddProduct'
 import { Toaster } from 'react-hot-toast'
 import {
   isLoggedIn,
@@ -327,8 +329,8 @@ export default function App(): ReactNode {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="analytics" element={<PlaceholderPage title="Analytics" />} />
           <Route path="reports" element={<PlaceholderPage title="Sales Reports" />} />
-          <Route path="products" element={<PlaceholderPage title="Product Management" />} />
-          <Route path="products/new" element={<PlaceholderPage title="Add Product" />} />
+          <Route path="products" element={<ProductsManagement />} />
+          <Route path="products/new" element={<AddProduct />} />
           <Route path="categories" element={<PlaceholderPage title="Categories" />} />
           <Route path="orders" element={<PlaceholderPage title="Orders" />} />
           <Route path="shipping" element={<PlaceholderPage title="Shipping" />} />

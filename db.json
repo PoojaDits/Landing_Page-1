@@ -1,72 +1,403 @@
 {
-    "users": [
-        {
-            "id": 1,
-            "firstName": "John",
-            "lastName": "Doe",
-            "email": "johndoe@example.com",
-            "password": "Happyme31@",
-            "role": "super_admin"
-        },
-        {
-            "id": 2,
-            "firstName": "Alice",
-            "lastName": "Johnson",
-            "email": "alice@example.com",
-            "password": "Happyme31@",
-            "role": "admin"
-        },
-        {
-            "id": 3,
-            "firstName": "Bob",
-            "lastName": "White",
-            "email": "bob@example.com",
-            "password": "Happyme31@",
-            "role": "customer"
-        },
-        {
-            "id": 4,
-            "firstName": "Carol",
-            "lastName": "Doe",
-            "email": "carol@example.com",
-            "password": "Happyme31@",
-            "role": "customer"
-        },
-        {
-            "id": 5,
-            "firstName": "Robert",
-            "lastName": "Tennison",
-            "email": "robert@example.com",
-            "password": "Happyme31@",
-            "role": "admin"
-        }
-    ],
-    "products": [],
-    "stores": [
-        {
-            "id": 1,
-            "name": "Store 1",
-            "ownerId": 2
-        },
-        {
-            "id": 2,
-            "name": "Store 2",
-            "ownerId": 1
-        },
-        {
-            "id": 3,
-            "name": "Store 3",
-            "ownerId": 3
-        },
-        {
-            "id": 4,
-            "name": "Store 4",
-            "ownerId": 4
-        },
-        {
-            "id": 5,
-            "name": "Store 5",
-            "ownerId": 5
-        }
-    ]
+  "users": [
+    {
+      "id": 1,
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "johndoe@example.com",
+      "password": "Happyme31@",
+      "role": "super_admin"
+    },
+    {
+      "id": 2,
+      "firstName": "Alice",
+      "lastName": "Johnson",
+      "email": "alice@example.com",
+      "password": "Happyme31@",
+      "role": "admin"
+    },
+    {
+      "id": 3,
+      "firstName": "Bob",
+      "lastName": "White",
+      "email": "bob@example.com",
+      "password": "Happyme31@",
+      "role": "customer"
+    },
+    {
+      "id": 4,
+      "firstName": "Carol",
+      "lastName": "Doe",
+      "email": "carol@example.com",
+      "password": "Happyme31@",
+      "role": "customer"
+    },
+    {
+      "id": 5,
+      "firstName": "Robert",
+      "lastName": "Tennison",
+      "email": "robert@example.com",
+      "password": "Happyme31@",
+      "role": "admin"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Wireless Headphones",
+      "category": "Electronics",
+      "price": 79.99,
+      "originalPrice": 99.99,
+      "rating": 4,
+      "reviews": 128,
+      "badge": "Sale",
+      "image": "https://images.unsplash.com/photo-1613040809024-b4ef7ba99bc3?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 2,
+      "name": "Running Sneakers",
+      "category": "Footwear",
+      "price": 59.99,
+      "rating": 5,
+      "reviews": 245,
+      "badge": "New",
+      "image": "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 3,
+      "name": "Smart Watch",
+      "category": "Electronics",
+      "price": 149.99,
+      "originalPrice": 199.99,
+      "rating": 4,
+      "reviews": 87,
+      "badge": "Hot",
+      "image": "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 4,
+      "name": "Leather Backpack",
+      "category": "Accessories",
+      "price": 89.99,
+      "rating": 4,
+      "reviews": 63,
+      "image": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 5,
+      "name": "Sunglasses",
+      "category": "Accessories",
+      "price": 34.99,
+      "originalPrice": 49.99,
+      "rating": 3,
+      "reviews": 192,
+      "badge": "Sale",
+      "image": "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 6,
+      "name": "Mechanical Keyboard",
+      "category": "Electronics",
+      "price": 119.99,
+      "rating": 5,
+      "reviews": 304,
+      "badge": "New",
+      "image": "https://images.unsplash.com/photo-1601445638532-1e66e89d09af?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 7,
+      "name": "Coffee Maker",
+      "category": "Kitchen",
+      "price": 49.99,
+      "originalPrice": 69.99,
+      "rating": 4,
+      "reviews": 411,
+      "badge": "Sale",
+      "image": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 8,
+      "name": "Yoga Mat",
+      "category": "Sports",
+      "price": 29.99,
+      "rating": 5,
+      "reviews": 155,
+      "image": "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 9,
+      "name": "Bluetooth Speaker",
+      "category": "Electronics",
+      "price": 59.99,
+      "originalPrice": 79.99,
+      "rating": 4,
+      "reviews": 220,
+      "badge": "Sale",
+      "image": "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 10,
+      "name": "Trail Running Shoes",
+      "category": "Footwear",
+      "price": 89.99,
+      "rating": 5,
+      "reviews": 98,
+      "badge": "New",
+      "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 11,
+      "name": "Laptop Stand",
+      "category": "Electronics",
+      "price": 39.99,
+      "rating": 4,
+      "reviews": 310,
+      "image": "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 12,
+      "name": "Leather Wallet",
+      "category": "Accessories",
+      "price": 24.99,
+      "originalPrice": 34.99,
+      "rating": 4,
+      "reviews": 540,
+      "badge": "Sale",
+      "image": "https://images.unsplash.com/photo-1627123424574-724758594785?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 13,
+      "name": "Air Fryer",
+      "category": "Kitchen",
+      "price": 69.99,
+      "originalPrice": 99.99,
+      "rating": 5,
+      "reviews": 733,
+      "badge": "Hot",
+      "image": "https://images.unsplash.com/photo-1648560847832-f9f95942e62a?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 14,
+      "name": "Resistance Bands Set",
+      "category": "Sports",
+      "price": 19.99,
+      "rating": 4,
+      "reviews": 287,
+      "image": "https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 15,
+      "name": "Noise-Cancel Earbuds",
+      "category": "Electronics",
+      "price": 129.99,
+      "originalPrice": 159.99,
+      "rating": 5,
+      "reviews": 402,
+      "badge": "Hot",
+      "image": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 16,
+      "name": "Canvas Sneakers",
+      "category": "Footwear",
+      "price": 44.99,
+      "rating": 4,
+      "reviews": 178,
+      "image": "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 17,
+      "name": "Watch Band",
+      "category": "Accessories",
+      "price": 14.99,
+      "rating": 3,
+      "reviews": 89,
+      "image": "https://images.unsplash.com/photo-1617625802912-cde586faf749?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 18,
+      "name": "Blender",
+      "category": "Kitchen",
+      "price": 54.99,
+      "originalPrice": 74.99,
+      "rating": 4,
+      "reviews": 321,
+      "badge": "Sale",
+      "image": "https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 19,
+      "name": "Dumbbell Set",
+      "category": "Sports",
+      "price": 79.99,
+      "rating": 5,
+      "reviews": 195,
+      "badge": "New",
+      "image": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 20,
+      "name": "USB-C Hub",
+      "category": "Electronics",
+      "price": 34.99,
+      "originalPrice": 44.99,
+      "rating": 4,
+      "reviews": 567,
+      "badge": "Sale",
+      "image": "https://images.unsplash.com/photo-1625842268584-8f3296236761?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 21,
+      "name": "Hiking Boots",
+      "category": "Footwear",
+      "price": 109.99,
+      "rating": 5,
+      "reviews": 143,
+      "badge": "New",
+      "image": "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 22,
+      "name": "Crossbody Bag",
+      "category": "Accessories",
+      "price": 49.99,
+      "originalPrice": 64.99,
+      "rating": 4,
+      "reviews": 232,
+      "badge": "Sale",
+      "image": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 23,
+      "name": "Instant Pot",
+      "category": "Kitchen",
+      "price": 89.99,
+      "originalPrice": 119.99,
+      "rating": 5,
+      "reviews": 988,
+      "badge": "Hot",
+      "image": "https://images.unsplash.com/photo-1585515320310-259814833e62?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 24,
+      "name": "Jump Rope",
+      "category": "Sports",
+      "price": 12.99,
+      "rating": 4,
+      "reviews": 412,
+      "image": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 25,
+      "name": "Classic T-Shirt",
+      "category": "Clothes",
+      "price": 19.99,
+      "rating": 4,
+      "reviews": 110,
+      "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 26,
+      "name": "Denim Jeans",
+      "category": "Clothes",
+      "price": 49.99,
+      "rating": 5,
+      "reviews": 230,
+      "badge": "Hot",
+      "image": "https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 27,
+      "name": "Floral Perfume",
+      "category": "Perfumes",
+      "price": 89.99,
+      "rating": 5,
+      "reviews": 85,
+      "image": "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 28,
+      "name": "Wood Cologne",
+      "category": "Perfumes",
+      "price": 75,
+      "rating": 4,
+      "reviews": 120,
+      "badge": "New",
+      "image": "https://images.unsplash.com/photo-1523293115678-d2906198d3b4?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 29,
+      "name": "Leather Tote Bag",
+      "category": "Bags",
+      "price": 129.99,
+      "rating": 4,
+      "reviews": 340,
+      "image": "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 30,
+      "name": "Matte Lipstick",
+      "category": "Makeup",
+      "price": 18.99,
+      "rating": 5,
+      "reviews": 512,
+      "badge": "Sale",
+      "image": "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 31,
+      "name": "Eyeshadow Palette",
+      "category": "Makeup",
+      "price": 45,
+      "rating": 4,
+      "reviews": 215,
+      "image": "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 32,
+      "name": "Chef Knife Set",
+      "category": "Kitchen",
+      "price": 149.99,
+      "rating": 5,
+      "reviews": 90,
+      "badge": "Hot",
+      "image": "https://images.unsplash.com/photo-1593618998160-e34014e67546?w=600&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": 33,
+      "name": "Stand Mixer",
+      "category": "Kitchen",
+      "price": 299.99,
+      "rating": 5,
+      "reviews": 405,
+      "image": "https://images.unsplash.com/photo-1594385208974-2e75f8d7bb48?w=600&auto=format&fit=crop&q=80"
+    }
+  ],
+  "stores": [
+    {
+      "id": 1,
+      "name": "Store 1",
+      "ownerId": 2
+    },
+    {
+      "id": 2,
+      "name": "Store 2",
+      "ownerId": 1
+    },
+    {
+      "id": 3,
+      "name": "Store 3",
+      "ownerId": 3
+    },
+    {
+      "id": 4,
+      "name": "Store 4",
+      "ownerId": 4
+    },
+    {
+      "id": 5,
+      "name": "Store 5",
+      "ownerId": 5
+    }
+  ]
 }
