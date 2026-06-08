@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useProductStore } from '@/store/useProductStore';
 import type { Product, Category } from '@/types'
 
 const PAGE_SIZE = 6
@@ -15,31 +16,33 @@ export interface UseInfiniteProductsReturn {
   loadMore: () => void
 }
 
-export function useInfiniteProducts(category: Category): UseInfiniteProductsReturn {
-  const [allProducts, setAllProducts] = useState<Product[]>([])
+export function useInfiniteProducts(categoryProp?: Category): UseInfiniteProductsReturn {
+  const {
+    products,
+    selectedCategory,
+    isLoading: isGlobalLoading,
+    fetchProducts
+  } = useProductStore()
+
   const [currentPage, setCurrentPage] = useState(1)
   const [visibleProducts, setVisibleProducts] = useState<Product[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const sentinelRef = useRef<HTMLDivElement>(null)
 
-  // Fetch all products from server once
+  // Use prop category if provided, otherwise fallback to global store
+  const activeCategory = categoryProp || selectedCategory
+
+  // Fetch all products from server once using the store
   useEffect(() => {
-    setIsLoading(true)
-    fetch('/api/products')
-      .then((r) => r.json())
-      .then((data: Product[]) => {
-        setAllProducts(data || [])
-      })
-      .catch(() => setAllProducts([]))
-      .finally(() => setIsLoading(false))
-  }, [])
+    fetchProducts()
+  }, [fetchProducts])
 
   const allFiltered = useMemo(
     () =>
-      category === 'All'
-        ? allProducts
-        : allProducts.filter((p) => p.category === category),
-    [category, allProducts]
+      activeCategory === 'All'
+        ? products
+        : products.filter((p) => p.category === activeCategory),
+    [activeCategory, products]
   )
 
   const totalPages = Math.ceil(allFiltered.length / PAGE_SIZE)
@@ -97,7 +100,7 @@ export function useInfiniteProducts(category: Category): UseInfiniteProductsRetu
     currentPage,
     totalPages,
     hasMore,
-    isLoading,
+    isLoading: isGlobalLoading || isLoading,
     sentinelRef,
     goToPage,
     loadMore,

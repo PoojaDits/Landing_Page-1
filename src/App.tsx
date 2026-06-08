@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode } from 'react'
+import React, { useEffect, ReactNode } from 'react'
 import {
   Routes,
   Route,
@@ -40,43 +40,35 @@ import { Toaster } from 'react-hot-toast'
 import {
   isLoggedIn,
   getDashboardPath,
-  getStoredUser,
-  clearAuth,
   isImpersonating,
   getImpersonator,
   stopImpersonation,
 } from '@/lib/role'
-import type { Category, CartProduct, User } from '@/types'
+import { useCartStore } from '@/store/useCartStore'
+import { useAuthStore } from '@/store/useAuthStore'
+import { useProductStore } from '@/store/useProductStore'
+import type { Category } from '@/types'
 
-interface ProductsPageProps {
-  selectedCategory?: Category
-  setSelectedCategory: (category: Category) => void
-  addToCart: (product: CartProduct) => void
-}
-
-const ProductsPage: React.FC<ProductsPageProps> = ({
-  selectedCategory,
-  setSelectedCategory,
-  addToCart,
-}) => {
+const ProductsPage: React.FC = () => {
   const { category } = useParams<{ category?: string }>()
+  const setCategory = useProductStore((state) => state.setCategory)
+  const selectedCategory = useProductStore((state) => state.selectedCategory)
+  const addToCart = useCartStore((state) => state.addToCart)
 
   useEffect(() => {
-    setSelectedCategory((category || 'All') as Category)
-  }, [category, setSelectedCategory])
+    setCategory((category || 'All') as Category)
+  }, [category, setCategory])
 
-  const activeCategory =
-    ((category || selectedCategory || 'All') as Category) || 'All'
+  const activeCategory = ((category || selectedCategory) as Category) || 'All'
 
   return (
     <ProductGrid
       selectedCategory={activeCategory}
-      setSelectedCategory={setSelectedCategory}
+      setSelectedCategory={setCategory}
       addToCart={addToCart}
     />
   )
 }
-
 
 function RoleRedirect(): ReactNode {
   return (
@@ -87,44 +79,30 @@ function RoleRedirect(): ReactNode {
   )
 }
 
-interface PublicLayoutProps {
-  totalItems: number
-  toggleCart: () => void
-  loggedIn: boolean
-  user: User | null
+const PublicLayout: React.FC = () => {
+  const totalItems = useCartStore((state) => state.totalItems)
+  const toggleCart = useCartStore((state) => state.toggleCart)
+  const user = useAuthStore((state) => state.user)
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+
+  return (
+    <>
+      <Navbar
+        totalItems={totalItems}
+        toggleCart={toggleCart}
+        isLoggedIn={isAuthenticated}
+        user={user}
+      />
+      <Outlet />
+      <Footer />
+    </>
+  )
 }
 
-const PublicLayout: React.FC<PublicLayoutProps> = ({
-  totalItems,
-  toggleCart,
-  loggedIn,
-  user,
-}) => (
-  <>
-    <Navbar
-      totalItems={totalItems}
-      toggleCart={toggleCart}
-      isLoggedIn={loggedIn}
-      user={user}
-    />
-    <Outlet />
-    <Footer />
-  </>
-)
-
-interface HomePageProps {
-  selectedCategory?: Category
-  setSelectedCategory: (category: Category) => void
-}
-
-const HomePage: React.FC<HomePageProps> = ({
-  setSelectedCategory,
-}) => (
+const HomePage: React.FC = () => (
   <>
     <Hero />
-    <Categories
-      setSelectedCategory={setSelectedCategory}
-    />
+    <Categories />
   </>
 )
 
@@ -152,53 +130,22 @@ const ImpersonationBanner: React.FC = () => {
 }
 
 export default function App(): ReactNode {
-  const [cartItems, setCartItems] = useState<CartProduct[]>([])
-  const [isCartOpen, setIsCartOpen] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState<Category>('All')
   const location = useLocation()
-  const [user, setUser] = useState<User | null>(getStoredUser())
-  const [loggedIn, setLoggedIn] = useState(isLoggedIn())
+  const isCartOpen = useCartStore((state) => state.isCartOpen)
+  const cartItems = useCartStore((state) => state.cartItems)
+  const removeFromCart = useCartStore((state) => state.removeFromCart)
+  const updateQuantity = useCartStore((state) => state.updateQuantity)
+  const closeCart = useCartStore((state) => state.closeCart)
+  const clearAuth = useAuthStore((state) => state.clearAuth)
 
   useEffect(() => {
-    setLoggedIn(isLoggedIn())
-    setUser(getStoredUser())
+    // Force auth check on route change if needed
+    // The useAuthStore persist middleware handles the initial load
   }, [location])
-
-  const addToCart = (product: CartProduct): void => {
-    setCartItems((prev) => {
-      const exists = prev.find((i) => i.id === product.id)
-      if (exists)
-        return prev.map((i) =>
-          i.id === product.id
-            ? { ...i, quantity: i.quantity + 1 }
-            : i
-        )
-      return [...prev, { ...product, quantity: 1 }]
-    })
-  }
-
-  const removeFromCart = (id: number): void =>
-    setCartItems((prev) => prev.filter((i) => i.id !== id))
-
-  const updateQuantity = (id: number, qty: number): void => {
-    if (qty < 1) {
-      removeFromCart(id)
-      return
-    }
-    setCartItems((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, quantity: qty } : i))
-    )
-  }
-
-  const totalItems = cartItems.reduce((s, i) => s + i.quantity, 0)
 
   const handleLogout = (): void => {
     clearAuth()
-    setLoggedIn(false)
-    setUser(null)
   }
-
-  const toggleCart = (): void => setIsCartOpen((prev) => !prev)
 
   return (
     <>
@@ -210,49 +157,11 @@ export default function App(): ReactNode {
         <Route path="/" element={<RoleRedirect />} />
         <Route path="/dashboard" element={<RoleRedirect />} />
 
-        <Route
-          element={
-            <PublicLayout
-              totalItems={totalItems}
-              toggleCart={toggleCart}
-              loggedIn={loggedIn}
-              user={user}
-            />
-          }
-        >
-          <Route
-            path="/home"
-            element={
-              <HomePage
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-              />
-            }
-          />
-          <Route
-            path="/products"
-            element={
-              <ProductsPage
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-                addToCart={addToCart}
-              />
-            }
-          />
-          <Route
-            path="/products/:category"
-            element={
-              <ProductsPage
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-                addToCart={addToCart}
-              />
-            }
-          />
-          <Route
-            path="/product/:id"
-            element={<ProductDetail />}
-          />
+        <Route element={<PublicLayout />}>
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/products/:category" element={<ProductsPage />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/deals" element={<Deals />} />
           <Route path="/contact" element={<Contact />} />
         </Route>
@@ -262,51 +171,18 @@ export default function App(): ReactNode {
           element={
             <CustomerRoute>
               <CustomerLayout
-                totalItems={totalItems}
-                toggleCart={toggleCart}
                 handleLogout={handleLogout}
               />
             </CustomerRoute>
           }
         >
           <Route index element={<Navigate to="/customer/home" replace />} />
-
-          <Route
-            path="home"
-            element={
-              <HomePage
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-              />
-            }
-          />
-          <Route
-            path="products"
-            element={
-              <ProductsPage
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-                addToCart={addToCart}
-              />
-            }
-          />
-          <Route
-            path="products/:category"
-            element={
-              <ProductsPage
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-                addToCart={addToCart}
-              />
-            }
-          />
-          <Route
-            path="product/:id"
-            element={<ProductDetail />}
-          />
+          <Route path="home" element={<HomePage />} />
+          <Route path="products" element={<ProductsPage />} />
+          <Route path="products/:category" element={<ProductsPage />} />
+          <Route path="product/:id" element={<ProductDetail />} />
           <Route path="deals" element={<Deals />} />
           <Route path="contact" element={<Contact />} />
-
           <Route path="dashboard" element={<CustomerDashboard />} />
           <Route path="orders" element={<PlaceholderPage title="My Orders" />} />
           <Route path="wishlist" element={<PlaceholderPage title="My Wishlist" />} />
@@ -388,7 +264,7 @@ export default function App(): ReactNode {
           cartItems={cartItems}
           removeFromCart={removeFromCart}
           updateQuantity={updateQuantity}
-          closeCart={() => setIsCartOpen(false)}
+          closeCart={closeCart}
         />
       )}
       <Toaster position="top-right" />

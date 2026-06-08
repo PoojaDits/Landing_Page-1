@@ -7,8 +7,8 @@ const AddProduct: React.FC = () => {
   const [name, setName] = useState('')
   const [category, setCategory] = useState('Electronics')
   const [price, setPrice] = useState('0')
-  const [rating, setRating] = useState('5')
-  const [reviews, setReviews] = useState('0')
+  const [rating] = useState('5')
+  const [reviews] = useState('0')
   const [description, setDescription] = useState('')
   const [imageDataUrl, setImageDataUrl] = useState<string | null>(null)
 
