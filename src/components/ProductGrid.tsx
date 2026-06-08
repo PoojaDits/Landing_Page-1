@@ -6,7 +6,7 @@ import { useInfiniteProducts } from '@/hooks/useInfiniteProducts'
 import { useProductStore } from '@/store/useProductStore'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
+
 
 const categories: Category[] = [
   'All',
