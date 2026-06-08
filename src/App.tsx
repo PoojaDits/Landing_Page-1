@@ -57,9 +57,7 @@ const ProductsPage: React.FC = () => {
     setCategory((category || 'All') as Category)
   }, [category, setCategory])
 
-  return (
-    <ProductGrid />
-  )
+  return <ProductGrid />
 }
 
 function RoleRedirect(): ReactNode {
@@ -138,6 +136,7 @@ export default function App(): ReactNode {
 
         <Route path="/dashboard" element={<RoleRedirect />} />
 
+        {/* Public site */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/home" element={<HomePage />} />
@@ -148,24 +147,23 @@ export default function App(): ReactNode {
           <Route path="/contact" element={<Contact />} />
         </Route>
 
+        {/* Customer dashboard */}
         <Route
           path="/customer"
           element={
             <CustomerRoute>
-              <CustomerLayout
-                handleLogout={handleLogout}
-              />
+              <CustomerLayout handleLogout={handleLogout} />
             </CustomerRoute>
           }
         >
-          <Route index element={<Navigate to="/customer/home" replace />} />
+          <Route index element={<Navigate to="/customer/dashboard" replace />} />
+          <Route path="dashboard" element={<CustomerDashboard />} />
           <Route path="home" element={<HomePage />} />
           <Route path="products" element={<ProductsPage />} />
           <Route path="products/:category" element={<ProductsPage />} />
           <Route path="product/:id" element={<ProductDetail />} />
           <Route path="deals" element={<Deals />} />
           <Route path="contact" element={<Contact />} />
-          <Route path="dashboard" element={<CustomerDashboard />} />
           <Route path="orders" element={<PlaceholderPage title="My Orders" />} />
           <Route path="wishlist" element={<PlaceholderPage title="My Wishlist" />} />
           <Route path="tracking" element={<PlaceholderPage title="Track Order" />} />
@@ -175,6 +173,7 @@ export default function App(): ReactNode {
           <Route path="settings" element={<PlaceholderPage title="Account Settings" />} />
         </Route>
 
+        {/* Admin dashboard */}
         <Route
           path="/admin"
           element={
@@ -198,6 +197,7 @@ export default function App(): ReactNode {
           <Route path="settings" element={<PlaceholderPage title="Store Settings" />} />
         </Route>
 
+        {/* Super-admin dashboard */}
         <Route
           path="/super-admin"
           element={
@@ -229,6 +229,7 @@ export default function App(): ReactNode {
           <Route path="settings" element={<PlaceholderPage title="Global Settings" />} />
         </Route>
 
+        {/* Catch-all */}
         <Route
           path="*"
           element={
