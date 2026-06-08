@@ -136,10 +136,10 @@ export default function App(): ReactNode {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        <Route path="/" element={<RoleRedirect />} />
         <Route path="/dashboard" element={<RoleRedirect />} />
 
         <Route element={<PublicLayout />}>
+          <Route path="/" element={<HomePage />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/products/:category" element={<ProductsPage />} />

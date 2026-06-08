@@ -1,4 +1,5 @@
 import type { User, Role } from '@/types'
+import { useAuthStore } from '@/store/useAuthStore'
 
 export const ROLES = {
   CUSTOMER: 'customer' as const,
@@ -19,12 +20,7 @@ export const DASHBOARD_PATHS: Record<Role, string> = {
 } as const
 
 export function getStoredUser(): User | null {
-  try {
-    const user = localStorage.getItem('myUser')
-    return user ? JSON.parse(user) : null
-  } catch {
-    return null
-  }
+  return useAuthStore.getState().user
 }
 
 export function getUserRole(): Role {
@@ -33,7 +29,8 @@ export function getUserRole(): Role {
 }
 
 export function isLoggedIn(): boolean {
-  return !!localStorage.getItem('myToken') && !!getStoredUser()
+  const state = useAuthStore.getState()
+  return state.isAuthenticated && !!state.user
 }
 
 export function storeLogin(
@@ -41,17 +38,14 @@ export function storeLogin(
   token: string,
   preserveImpersonator = false,
 ): void {
-  localStorage.setItem('myToken', token)
-  localStorage.setItem('myUser', JSON.stringify(userData))
+  useAuthStore.getState().setAuth(userData, token)
   if (!preserveImpersonator) {
     localStorage.removeItem('impersonator')
   }
 }
 
 export function clearAuth(): void {
-  localStorage.removeItem('myToken')
-  localStorage.removeItem('myUser')
-  localStorage.removeItem('impersonator')
+  useAuthStore.getState().clearAuth()
 }
 
 export function hasRole(...roles: Role[]): boolean {
