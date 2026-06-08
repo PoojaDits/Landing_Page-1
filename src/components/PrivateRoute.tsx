@@ -1,11 +1,10 @@
 import React from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import {
-  isLoggedIn,
-  getUserRole,
   DASHBOARD_PATHS,
   ROLES,
 } from '@/lib/role'
+import { useAuthStore } from '@/store/useAuthStore'
 import type { PrivateRouteProps, RoleRouteProps } from '@/types'
 
 export default function PrivateRoute({
@@ -13,13 +12,14 @@ export default function PrivateRoute({
   allowedRoles,
 }: PrivateRouteProps): React.ReactNode {
   const location = useLocation()
+  const { isAuthenticated, user } = useAuthStore()
 
-  if (!isLoggedIn()) {
+  if (!isAuthenticated || !user) {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
   if (allowedRoles && allowedRoles.length > 0) {
-    const userRole = getUserRole()
+    const userRole = user.role
     if (!allowedRoles.includes(userRole)) {
       return (
         <Navigate

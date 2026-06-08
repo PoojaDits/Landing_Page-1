@@ -80,19 +80,9 @@ function RoleRedirect(): ReactNode {
 }
 
 const PublicLayout: React.FC = () => {
-  const totalItems = useCartStore((state) => state.totalItems)
-  const toggleCart = useCartStore((state) => state.toggleCart)
-  const user = useAuthStore((state) => state.user)
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
-
   return (
     <>
-      <Navbar
-        totalItems={totalItems}
-        toggleCart={toggleCart}
-        isLoggedIn={isAuthenticated}
-        user={user}
-      />
+      <Navbar />
       <Outlet />
       <Footer />
     </>

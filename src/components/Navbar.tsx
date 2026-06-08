@@ -11,26 +11,21 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
-import type { User } from '@/types'
+import { useAuthStore } from '@/store/useAuthStore'
+import { useCartStore } from '@/store/useCartStore'
 
-interface NavbarProps {
-  totalItems: number
-  toggleCart: () => void
-  isLoggedIn: boolean
-  user: User | null
-}
-
-const Navbar: React.FC<NavbarProps> = ({
-  totalItems,
-  toggleCart,
-  isLoggedIn,
-  user,
-}) => {
+const Navbar: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false)
 
+  const user = useAuthStore((state) => state.user)
+  const isLoggedIn = useAuthStore((state) => state.isAuthenticated)
+  const clearAuth = useAuthStore((state) => state.clearAuth)
+
+  const totalItems = useCartStore((state) => state.totalItems)
+  const toggleCart = useCartStore((state) => state.toggleCart)
+
   const handleLogout = (): void => {
-    localStorage.removeItem('myToken')
-    localStorage.removeItem('myUser')
+    clearAuth()
     window.location.href = '/login'
   }
 

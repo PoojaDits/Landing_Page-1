@@ -28,14 +28,19 @@ export const useAuthStore = create<AuthStore>()(
         isAuthenticated: true,
       }),
 
-      clearAuth: () => set({
-        user: null,
-        token: null,
-        isAuthenticated: false,
-      }),
+      clearAuth: () => {
+        set({
+          user: null,
+          token: null,
+          isAuthenticated: false,
+        });
+        localStorage.removeItem('myToken');
+        localStorage.removeItem('myUser');
+        localStorage.removeItem('impersonator');
+      },
     }),
     {
-      name: 'auth-storage', // unique name for localStorage
+      name: 'auth-storage',
     }
   )
 );
