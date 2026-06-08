@@ -39,10 +39,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               key={link.path}
               to={link.path}
               className={({ isActive }) =>
-                `flex items-center gap-3 rounded-3xl px-4 py-3 text-sm font-medium transition ${
-                  isActive
-                    ? 'bg-cyan-500/15 text-cyan-300'
-                    : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                `flex items-center gap-3 rounded-3xl px-4 py-3 text-sm font-medium transition ${isActive
+                  ? 'bg-cyan-500/15 text-cyan-300'
+                  : 'text-slate-300 hover:bg-white/5 hover:text-white'
                 }`
               }
             >
@@ -81,7 +80,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </header>
 
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
-          {children}
+          <div className="max-w-7xl mx-auto w-full">
+            {children}
+          </div>
         </main>
       </div>
     </div>

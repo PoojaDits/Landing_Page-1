@@ -20,6 +20,8 @@ export function useInfiniteProducts(categoryProp?: Category): UseInfiniteProduct
   const {
     products,
     selectedCategory,
+    searchQuery,
+    sortBy,
     isLoading: isGlobalLoading,
     fetchProducts
   } = useProductStore()
@@ -29,21 +31,41 @@ export function useInfiniteProducts(categoryProp?: Category): UseInfiniteProduct
   const [isLoading, setIsLoading] = useState(false)
   const sentinelRef = useRef<HTMLDivElement>(null)
 
-  // Use prop category if provided, otherwise fallback to global store
   const activeCategory = categoryProp || selectedCategory
 
-  // Fetch all products from server once using the store
   useEffect(() => {
     fetchProducts()
   }, [fetchProducts])
 
-  const allFiltered = useMemo(
-    () =>
-      activeCategory === 'All'
-        ? products
-        : products.filter((p) => p.category === activeCategory),
-    [activeCategory, products]
-  )
+  const allFiltered = useMemo(() => {
+    let result = [...products];
+
+    // 1. Filter by Category
+    if (activeCategory !== 'All') {
+      result = result.filter((p) => p.category === activeCategory);
+    }
+
+    // 2. Filter by Search Query
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter((p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q)
+      );
+    }
+
+    // 3. Sort
+    if (sortBy !== 'none') {
+      result.sort((a, b) => {
+        if (sortBy === 'price-asc') return a.price - b.price;
+        if (sortBy === 'price-desc') return b.price - a.price;
+        if (sortBy === 'rating') return b.rating - a.rating;
+        return 0;
+      });
+    }
+
+    return result;
+  }, [activeCategory, products, searchQuery, sortBy]);
 
   const totalPages = Math.ceil(allFiltered.length / PAGE_SIZE)
   const hasMore = currentPage < totalPages
@@ -78,7 +100,6 @@ export function useInfiniteProducts(categoryProp?: Category): UseInfiniteProduct
     [totalPages, allFiltered]
   )
 
-  // Intersection observer for infinite scroll
   useEffect(() => {
     const sentinel = sentinelRef.current
     if (!sentinel) return

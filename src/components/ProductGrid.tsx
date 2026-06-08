@@ -4,6 +4,9 @@ import ProductCard from './ProductCard'
 import type { Category } from '@/types'
 import { useInfiniteProducts } from '@/hooks/useInfiniteProducts'
 import { useProductStore } from '@/store/useProductStore'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
 
 const categories: Category[] = [
   'All',
@@ -134,6 +137,10 @@ const ProductGrid: React.FC = () => {
 
   const setGlobalCategory = useProductStore((state) => state.setCategory)
   const selectedCategory = useProductStore((state) => state.selectedCategory)
+  const searchQuery = useProductStore((state) => state.searchQuery)
+  const setSearchQuery = useProductStore((state) => state.setSearchQuery)
+  const sortBy = useProductStore((state) => state.sortBy)
+  const setSortBy = useProductStore((state) => state.setSortBy)
 
   const activeCategory = normaliseCategory(category || selectedCategory)
 
@@ -162,21 +169,42 @@ const ProductGrid: React.FC = () => {
 
   return (
     <section className="px-4 py-8 md:py-[60px] md:px-[40px] flex-1 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
-
-
       <h2 className="text-center text-[1.5rem] mb-1.5 text-[#b9b9bd]">
         {activeCategory !== 'All' ? `${activeCategory} Products` : 'All Products'}
       </h2>
-      <p className="text-center text-[#555] text-[0.85rem] mb-2">
+      <p className="text-center text-[#555] text-[0.85rem] mb-6">
         Browse our curated collection
       </p>
 
+      <div className="max-w-[1200px] mx-auto mb-8 flex flex-col md:flex-row gap-4 items-center justify-between bg-white/5 p-4 rounded-2xl border border-white/10 backdrop-blur-sm">
+        <div className="w-full md:w-1/2 relative">
+          <Label className="text-gray-400 text-xs mb-1 block">Search Products</Label>
+          <Input
+            placeholder="Search for products, brands..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="bg-white/5 border-gray-700 text-white placeholder:text-gray-500 h-10"
+          />
+        </div>
+        <div className="w-full md:w-1/3">
+          <Label className="text-gray-400 text-xs mb-1 block">Sort By</Label>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
+            className="w-full bg-white/5 border border-gray-700 text-white rounded-md h-10 px-3 text-sm outline-none focus:ring-2 focus:ring-[#e94560]"
+          >
+            <option value="none" className="bg-[#1a1a2e]">Default</option>
+            <option value="price-asc" className="bg-[#1a1a2e]">Price: Low to High</option>
+            <option value="price-desc" className="bg-[#1a1a2e]">Price: High to Low</option>
+            <option value="rating" className="bg-[#1a1a2e]">Highest Rated</option>
+          </select>
+        </div>
+      </div>
 
       <p className="text-center text-[#888] text-xs mb-5">
         Showing <span className="text-[#e94560] font-semibold">{visibleProducts.length}</span> of{' '}
         <span className="font-semibold text-gray-400">{allFiltered.length}</span> products
       </p>
-
 
       <div className="flex gap-2.5 overflow-x-auto whitespace-nowrap py-1 mb-5 pb-4 md:justify-center md:overflow-x-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {categories.map((cat) => (
@@ -193,10 +221,9 @@ const ProductGrid: React.FC = () => {
         ))}
       </div>
 
-
       {allFiltered.length === 0 ? (
         <p className="text-center text-gray-400 mt-10">
-          No products found in "{activeCategory}".
+          No products found matching your criteria.
         </p>
       ) : (
         <>
@@ -207,12 +234,10 @@ const ProductGrid: React.FC = () => {
               </LazyCard>
             ))}
 
-
             {isLoading &&
               Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={`skel-${i}`} />)
             }
           </div>
-
 
           <div ref={sentinelRef} className="h-10 mt-4 flex items-center justify-center">
             {isLoading && (

@@ -1,9 +1,13 @@
 import { create } from 'zustand';
 import type { Product, Category } from '@/types';
 
+type SortOption = 'price-asc' | 'price-desc' | 'rating' | 'none';
+
 interface ProductState {
     products: Product[];
     selectedCategory: Category;
+    searchQuery: string;
+    sortBy: SortOption;
     isLoading: boolean;
     error: string | null;
 }
@@ -11,6 +15,8 @@ interface ProductState {
 interface ProductActions {
     fetchProducts: () => Promise<void>;
     setCategory: (category: Category) => void;
+    setSearchQuery: (query: string) => void;
+    setSortBy: (sort: SortOption) => void;
     clearProducts: () => void;
 }
 
@@ -19,11 +25,12 @@ interface ProductStore extends ProductState, ProductActions { }
 export const useProductStore = create<ProductStore>((set, get) => ({
     products: [],
     selectedCategory: 'All',
+    searchQuery: '',
+    sortBy: 'none',
     isLoading: false,
     error: null,
 
     fetchProducts: async () => {
-        // Prevent redundant fetches if we already have products
         if (get().products.length > 0) return;
 
         set({ isLoading: true, error: null });
@@ -42,6 +49,14 @@ export const useProductStore = create<ProductStore>((set, get) => ({
 
     setCategory: (category: Category) => {
         set({ selectedCategory: category });
+    },
+
+    setSearchQuery: (query: string) => {
+        set({ searchQuery: query });
+    },
+
+    setSortBy: (sort: SortOption) => {
+        set({ sortBy: sort });
     },
 
     clearProducts: () => {
