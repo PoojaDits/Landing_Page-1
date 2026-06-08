@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import ProductCard from './ProductCard'
-import type { Category, CartProduct } from '@/types'
+import type { Category } from '@/types'
 import { useInfiniteProducts } from '@/hooks/useInfiniteProducts'
+import { useProductStore } from '@/store/useProductStore'
 
 const categories: Category[] = [
   'All',
@@ -24,7 +25,7 @@ const normaliseCategory = (value: string | undefined): Category => {
   const match = categories.find((c) => c.toLowerCase() === String(v).toLowerCase())
   return match || 'All'
 }
- 
+
 const LazyCard: React.FC<{ children: React.ReactNode; index: number }> = ({ children, index }) => {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
@@ -65,7 +66,7 @@ const SkeletonCard: React.FC = () => (
     </div>
   </div>
 )
- 
+
 interface PaginationProps {
   currentPage: number
   totalPages: number
@@ -105,11 +106,10 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onGoTo
           <button
             key={p}
             onClick={() => onGoTo(p as number)}
-            className={`w-9 h-9 rounded-lg text-sm font-semibold transition-all ${
-              currentPage === p
-                ? 'bg-[#e94560] text-white shadow-lg shadow-[#e94560]/30 scale-105'
-                : 'bg-white/10 text-gray-300 hover:bg-white/20'
-            }`}
+            className={`w-9 h-9 rounded-lg text-sm font-semibold transition-all ${currentPage === p
+              ? 'bg-[#e94560] text-white shadow-lg shadow-[#e94560]/30 scale-105'
+              : 'bg-white/10 text-gray-300 hover:bg-white/20'
+              }`}
           >
             {p}
           </button>
@@ -127,31 +127,24 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onGoTo
   )
 }
 
-interface ProductGridProps {
-  selectedCategory?: Category
-  setSelectedCategory?: (category: Category) => void
-  addToCart: (product: CartProduct) => void
-}
-
-const ProductGrid: React.FC<ProductGridProps> = ({
-  selectedCategory,
-  setSelectedCategory,
-  addToCart,
-}) => {
+const ProductGrid: React.FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { category } = useParams<{ category?: string }>()
 
+  const setGlobalCategory = useProductStore((state) => state.setCategory)
+  const selectedCategory = useProductStore((state) => state.selectedCategory)
+
   const activeCategory = normaliseCategory(category || selectedCategory)
 
   useEffect(() => {
-    if (setSelectedCategory) setSelectedCategory(normaliseCategory(category))
-  }, [category, setSelectedCategory])
+    setGlobalCategory(normaliseCategory(category))
+  }, [category, setGlobalCategory])
 
   const basePath = location.pathname.startsWith('/customer') ? '/customer' : ''
 
   const handleFilterClick = (cat: Category): void => {
-    if (typeof setSelectedCategory === 'function') setSelectedCategory(cat)
+    setGlobalCategory(cat)
     if (cat === 'All') navigate(`${basePath}/products`)
     else navigate(`${basePath}/products/${cat}`)
   }
@@ -170,7 +163,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   return (
     <section className="px-4 py-8 md:py-[60px] md:px-[40px] flex-1 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
 
-      
+
       <h2 className="text-center text-[1.5rem] mb-1.5 text-[#b9b9bd]">
         {activeCategory !== 'All' ? `${activeCategory} Products` : 'All Products'}
       </h2>
@@ -178,22 +171,21 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         Browse our curated collection
       </p>
 
-      
+
       <p className="text-center text-[#888] text-xs mb-5">
         Showing <span className="text-[#e94560] font-semibold">{visibleProducts.length}</span> of{' '}
         <span className="font-semibold text-gray-400">{allFiltered.length}</span> products
       </p>
 
-      
+
       <div className="flex gap-2.5 overflow-x-auto whitespace-nowrap py-1 mb-5 pb-4 md:justify-center md:overflow-x-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {categories.map((cat) => (
           <button
             key={cat}
-            className={`px-4 py-1.5 border border-black/30 rounded-full text-[0.8rem] font-semibold cursor-pointer transition-all ${
-              activeCategory === cat
-                ? 'bg-[#e94560] text-white border-[#e94560] shadow-md shadow-[#e94560]/30'
-                : 'bg-white/10 text-gray-300 hover:bg-white/20'
-            }`}
+            className={`px-4 py-1.5 border border-black/30 rounded-full text-[0.8rem] font-semibold cursor-pointer transition-all ${activeCategory === cat
+              ? 'bg-[#e94560] text-white border-[#e94560] shadow-md shadow-[#e94560]/30'
+              : 'bg-white/10 text-gray-300 hover:bg-white/20'
+              }`}
             onClick={() => handleFilterClick(cat)}
           >
             {cat}
@@ -201,7 +193,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         ))}
       </div>
 
-      
+
       {allFiltered.length === 0 ? (
         <p className="text-center text-gray-400 mt-10">
           No products found in "{activeCategory}".
@@ -211,17 +203,17 @@ const ProductGrid: React.FC<ProductGridProps> = ({
           <div className="grid grid-cols-2 gap-3 max-w-[1200px] mx-auto md:grid-cols-[repeat(auto-fill,minmax(240px,1fr))] md:gap-[25px]">
             {visibleProducts.map((product, index) => (
               <LazyCard key={product.id} index={index % 6}>
-                <ProductCard product={product} addToCart={addToCart} />
+                <ProductCard product={product} />
               </LazyCard>
             ))}
 
-            
+
             {isLoading &&
               Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={`skel-${i}`} />)
             }
           </div>
 
-          
+
           <div ref={sentinelRef} className="h-10 mt-4 flex items-center justify-center">
             {isLoading && (
               <div className="flex gap-2">

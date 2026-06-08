@@ -52,21 +52,13 @@ import type { Category } from '@/types'
 const ProductsPage: React.FC = () => {
   const { category } = useParams<{ category?: string }>()
   const setCategory = useProductStore((state) => state.setCategory)
-  const selectedCategory = useProductStore((state) => state.selectedCategory)
-  const addToCart = useCartStore((state) => state.addToCart)
 
   useEffect(() => {
     setCategory((category || 'All') as Category)
   }, [category, setCategory])
 
-  const activeCategory = ((category || selectedCategory) as Category) || 'All'
-
   return (
-    <ProductGrid
-      selectedCategory={activeCategory}
-      setSelectedCategory={setCategory}
-      addToCart={addToCart}
-    />
+    <ProductGrid />
   )
 }
 

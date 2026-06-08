@@ -3,11 +3,13 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { useCartStore } from '@/store/useCartStore'
 import type { ProductCardProps } from '@/types'
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const navigate = useNavigate()
   const location = useLocation()
+  const addToCart = useCartStore((state) => state.addToCart)
 
   const basePath = location.pathname.startsWith('/customer')
     ? '/customer'
@@ -24,7 +26,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart }) => {
     >
       <div className="h-[140px] md:h-[200px] bg-muted/30 flex items-center justify-center text-[2.5rem] md:text-[4rem] relative overflow-hidden">
         {product.image ? (
-          
+
           <img
             src={product.image}
             alt={product.name}
@@ -72,7 +74,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart }) => {
           className="w-full md:w-auto font-semibold text-white border-0 rounded-full mt-4"
           onClick={(e) => {
             e.stopPropagation()
-            addToCart({ ...product, quantity: 1 })
+            if (addToCart) {
+              addToCart({ ...product, quantity: 1 })
+            } else {
+              // Fallback if for some reason the store action is missing
+              console.error('addToCart action not found')
+            }
           }}
         >
           Add to Cart
