@@ -29,13 +29,13 @@ const ProductsManagement: React.FC = () => {
   const [filterCategory, setFilterCategory] = useState('All')
   const [draggedId, setDraggedId] = useState<number | null>(null)
 
-  // ── Drag & Drop ─────────────────────────────────────────────────────────────
-  const handleDragStart = (e: React.DragEvent, id: number) => {
+
+  const handleDragStart = (_e: React.DragEvent, id: number) => {
     setDraggedId(id)
   }
 
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault() // Allow drop
+    e.preventDefault()
   }
 
   const handleDrop = (e: React.DragEvent, targetId: number) => {
@@ -46,9 +46,8 @@ const ProductsManagement: React.FC = () => {
       const newProducts = [...prev]
       const draggedIndex = newProducts.findIndex((p) => p.id === draggedId)
       const targetIndex = newProducts.findIndex((p) => p.id === targetId)
-      
+
       if (draggedIndex !== -1 && targetIndex !== -1) {
-        // Swap the items
         const temp = newProducts[draggedIndex]
         newProducts[draggedIndex] = newProducts[targetIndex]
         newProducts[targetIndex] = temp
@@ -71,7 +70,7 @@ const ProductsManagement: React.FC = () => {
     fetchProducts()
   }, [])
 
-  // ── Delete ──────────────────────────────────────────────────────────────────
+
   const handleDelete = async (id: number) => {
     if (!window.confirm('Delete this product?')) return
     setLoading(true)
@@ -87,7 +86,7 @@ const ProductsManagement: React.FC = () => {
     }
   }
 
-  // ── Edit ────────────────────────────────────────────────────────────────────
+
   const handleEdit = (product: ProductItem) => {
     setEditingId(product.id)
     setEditData({ ...product })
@@ -123,7 +122,7 @@ const ProductsManagement: React.FC = () => {
     }
   }
 
-  // ── Filtered list ───────────────────────────────────────────────────────────
+
   const displayed = products.filter((p) => {
     const matchSearch = p.name?.toLowerCase().includes(search.toLowerCase())
     const matchCat = filterCategory === 'All' || p.category === filterCategory
@@ -132,7 +131,7 @@ const ProductsManagement: React.FC = () => {
 
   return (
     <div className="p-6 min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
-      {/* Header */}
+
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-white">Products</h1>
@@ -146,7 +145,7 @@ const ProductsManagement: React.FC = () => {
         </Link>
       </div>
 
-      {/* Filters */}
+
       <div className="flex flex-wrap gap-3 mb-6">
         <input
           type="text"
@@ -165,7 +164,6 @@ const ProductsManagement: React.FC = () => {
         </select>
       </div>
 
-      {/* Loading skeleton */}
       {loading && products.length === 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
@@ -174,7 +172,7 @@ const ProductsManagement: React.FC = () => {
         </div>
       )}
 
-      {/* Empty state */}
+
       {!loading && displayed.length === 0 && (
         <div className="text-center py-20 text-gray-400">
           <p className="text-5xl mb-4">📦</p>
@@ -182,7 +180,6 @@ const ProductsManagement: React.FC = () => {
         </div>
       )}
 
-      {/* Product Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {displayed.map((p) => (
           <div
@@ -197,16 +194,16 @@ const ProductsManagement: React.FC = () => {
             `}
           >
             {editingId === p.id ? (
-              /* ── Edit Mode ── */
+
               <div className="p-4 space-y-2 flex-1">
                 <p className="text-[#e94560] text-xs font-semibold uppercase tracking-wider mb-3">Editing #{p.id}</p>
 
                 <input
-                  type="text"
-                  value={editData.name || ''}
-                  onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                  placeholder="Product name"
-                  className="w-full px-3 py-1.5 rounded-lg bg-white/10 text-white border border-white/20 text-sm focus:outline-none focus:border-[#e94560]"
+                type="text"
+                value={editData.name || ''}
+                onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                placeholder="Product name"
+                className="w-full px-3 py-1.5 rounded-lg bg-white/10 text-white border border-white/20 text-sm focus:outline-none focus:border-[#e94560]"
                 />
 
                 <select
@@ -269,7 +266,7 @@ const ProductsManagement: React.FC = () => {
                 </div>
               </div>
             ) : (
-              /* ── View Mode ── */
+
               <>
                 <div className="relative h-44 bg-black/20">
                   {p.image ? (
