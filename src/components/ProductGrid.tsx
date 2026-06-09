@@ -165,7 +165,17 @@ const ProductGrid: React.FC = () => {
     isLoading,
     sentinelRef,
     goToPage,
+    isFetchingNextPage,
   } = useInfiniteProducts(activeCategory)
+
+  // Strict 12 products per page for "All".
+  // We use server-side pagination (PAGE_SIZE=12) + the numbered Pagination.
+  // For "All" we render *only* the 12 items belonging to the current page.
+  // Specific categories keep cumulative infinite-scroll style.
+  const PAGE_SIZE_DISPLAY = 12;
+  const startIdx = activeCategory === 'All' ? (currentPage - 1) * PAGE_SIZE_DISPLAY : 0;
+  const endIdx = activeCategory === 'All' ? startIdx + PAGE_SIZE_DISPLAY : visibleProducts.length;
+  const productsToDisplay = visibleProducts.slice(startIdx, endIdx);
 
   return (
     <section className="px-4 py-8 md:py-[60px] md:px-[40px] flex-1 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
@@ -202,8 +212,18 @@ const ProductGrid: React.FC = () => {
       </div>
 
       <p className="text-center text-[#888] text-xs mb-5">
-        Showing <span className="text-[#e94560] font-semibold">{visibleProducts.length}</span> of{' '}
-        <span className="font-semibold text-gray-400">{allFiltered.length}</span> products
+        {activeCategory === 'All' ? (
+          <>
+            Showing <span className="text-[#e94560] font-semibold">{startIdx + 1}</span>–<span className="text-[#e94560] font-semibold">{Math.min(endIdx, allFiltered.length)}</span> of{' '}
+            <span className="font-semibold text-gray-400">{allFiltered.length}</span> products
+            <span className="text-gray-500"> (Page {currentPage})</span>
+          </>
+        ) : (
+          <>
+            Showing <span className="text-[#e94560] font-semibold">{visibleProducts.length}</span> of{' '}
+            <span className="font-semibold text-gray-400">{allFiltered.length}</span> products
+          </>
+        )}
       </p>
 
       <div className="flex gap-2.5 overflow-x-auto whitespace-nowrap py-1 mb-5 pb-4 md:justify-center md:overflow-x-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -228,8 +248,8 @@ const ProductGrid: React.FC = () => {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3 max-w-[1200px] mx-auto md:grid-cols-[repeat(auto-fill,minmax(240px,1fr))] md:gap-[25px]">
-            {visibleProducts.map((product, index) => (
-              <LazyCard key={product.id} index={index % 6}>
+            {productsToDisplay.map((product, index) => (
+              <LazyCard key={product.id} index={index % 12}>
                 <ProductCard product={product} />
               </LazyCard>
             ))}
@@ -239,26 +259,34 @@ const ProductGrid: React.FC = () => {
             }
           </div>
 
-          <div ref={sentinelRef} className="h-10 mt-4 flex items-center justify-center">
-            {isLoading && (
-              <div className="flex gap-2">
-                {[0, 1, 2].map((i) => (
-                  <span
-                    key={i}
-                    className="w-2 h-2 rounded-full bg-[#e94560] animate-bounce"
-                    style={{ animationDelay: `${i * 0.15}s` }}
-                  />
-                ))}
-              </div>
-            )}
-            {!hasMore && visibleProducts.length > 0 && !isLoading && (
-              <p className="text-gray-600 text-xs tracking-widest uppercase">
-                ✦ All products loaded ✦
-              </p>
-            )}
-          </div>
+          {/* Sentinel for infinite scroll is only active for specific categories (chunks of 6).
+              On "All" we use strict 12-per-page via the numbered Pagination (no auto "further" loading). */}
+          {activeCategory !== 'All' && (
+            <div ref={sentinelRef} className="h-10 mt-4 flex items-center justify-center">
+              {isFetchingNextPage && (
+                <div className="flex gap-2">
+                  {[0, 1, 2].map((i) => (
+                    <span
+                      key={i}
+                      className="w-2 h-2 rounded-full bg-[#e94560] animate-bounce"
+                      style={{ animationDelay: `${i * 0.15}s` }}
+                    />
+                  ))}
+                </div>
+              )}
+              {!hasMore && visibleProducts.length > 0 && !isLoading && (
+                <p className="text-gray-600 text-xs tracking-widest uppercase">
+                  ✦ All products loaded ✦
+                </p>
+              )}
+            </div>
+          )}
 
-          <Pagination currentPage={currentPage} totalPages={totalPages} onGoTo={goToPage} />
+          {/* Numbered Pagination only for "All" (12 per page, no auto advance on scroll).
+              For infinite scroll categories, we hide it so scrolling does not "go to next page by itself". */}
+          {activeCategory === 'All' && (
+            <Pagination currentPage={currentPage} totalPages={totalPages} onGoTo={goToPage} />
+          )}
         </>
       )}
     </section>

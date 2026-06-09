@@ -1,10 +1,8 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useRef, useEffect, useCallback } from 'react'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { useProductStore } from '@/store/useProductStore'
-import { useQuery } from '@tanstack/react-query'
-import { fetchProducts } from '@/lib/api'
+import { fetchPaginatedProducts } from '@/lib/api'
 import type { Product, Category } from '@/types'
-
-const PAGE_SIZE = 6
 
 export interface UseInfiniteProductsReturn {
   visibleProducts: Product[]
@@ -17,6 +15,7 @@ export interface UseInfiniteProductsReturn {
   sentinelRef: React.RefObject<HTMLDivElement | null>
   goToPage: (page: number) => void
   loadMore: () => void
+  isFetchingNextPage?: boolean
 }
 
 export function useInfiniteProducts(categoryProp?: Category): UseInfiniteProductsReturn {
@@ -26,94 +25,84 @@ export function useInfiniteProducts(categoryProp?: Category): UseInfiniteProduct
     sortBy,
   } = useProductStore()
 
-  // Single source of truth for products via React Query
-  const {
-    data: products = [],
-    isLoading: isGlobalLoading,
-    isFetching: isGlobalFetching,
-    error
-  } = useQuery({
-    queryKey: ['products'],
-    queryFn: fetchProducts,
-  })
-
-  const [currentPage, setCurrentPage] = useState(1)
-  const [isPageChanging, setIsPageChanging] = useState(false)
-  const sentinelRef = useRef<HTMLDivElement>(null)
-
   const activeCategory = categoryProp || selectedCategory
 
-  // Client-side filtering + sorting (fast for small datasets)
-  const allFiltered = useMemo(() => {
-    let result = [...products]
+  // Different chunk sizes:
+  // - "All": 12 per page (used with numbered pagination, strict per-page view)
+  // - Specific categories: 6 per load for infinite scroll (first 6, then +6 on scroll)
+  const isAll = activeCategory === 'All'
+  const chunkSize = isAll ? 12 : 6
 
-    if (activeCategory !== 'All') {
-      result = result.filter((p) => p.category === activeCategory)
-    }
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isLoading,
+    isFetching,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['products', activeCategory, searchQuery, sortBy],
+    queryFn: ({ pageParam = 1 }) =>
+      fetchPaginatedProducts({
+        page: pageParam,
+        limit: chunkSize,
+        category: activeCategory !== 'All' ? activeCategory : undefined,
+        search: searchQuery || undefined,
+        sortBy,
+      }),
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    initialPageParam: 1,
+  })
 
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase()
-      result = result.filter((p) =>
-        p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
-      )
-    }
+  const pages = data?.pages || []
+  const visibleProducts = pages.flatMap((p) => p.products)
+  const total = pages.length > 0 ? pages[0].total : 0
+  const totalPages = Math.ceil(total / chunkSize)
+  const currentPage = pages.length
+  const hasMore = !!hasNextPage
 
-    if (sortBy !== 'none') {
-      result.sort((a, b) => {
-        if (sortBy === 'price-asc') return a.price - b.price
-        if (sortBy === 'price-desc') return b.price - a.price
-        if (sortBy === 'rating') return b.rating - a.rating
-        return 0
-      })
-    }
+  // allFiltered kept for backward compatibility in ProductGrid (only .length and length===0 used)
+  // We use a length-correct dummy array (no full data fetched on client)
+  const allFiltered = Array.from({ length: total }, () => ({ id: 0 } as Product))
 
-    return result
-  }, [products, activeCategory, searchQuery, sortBy])
-
-  const totalPages = Math.ceil(allFiltered.length / PAGE_SIZE)
-  const hasMore = currentPage < totalPages
-
-  // Reset to page 1 when filters change
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [allFiltered])
-
-  const visibleProducts = useMemo(() => {
-    return allFiltered.slice(0, currentPage * PAGE_SIZE)
-  }, [allFiltered, currentPage])
+  const sentinelRef = useRef<HTMLDivElement>(null)
 
   const loadMore = useCallback(() => {
-    if (isPageChanging || !hasMore) return
-    setIsPageChanging(true)
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage()
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage])
 
-    // Small natural delay for UX (feels responsive, not fake loading)
-    requestAnimationFrame(() => {
-      setCurrentPage((prev) => prev + 1)
-      setIsPageChanging(false)
-    })
-  }, [isPageChanging, hasMore])
+  const goToPage = useCallback(
+    async (page: number) => {
+      if (page < 1 || page > totalPages || isFetchingNextPage) return
 
-  const goToPage = useCallback((page: number) => {
-    if (page < 1 || page > totalPages || isPageChanging) return
+      const currentLoaded = pages.length
+      if (page <= currentLoaded) {
+        window.scrollTo({ top: 300, behavior: 'smooth' })
+        return
+      }
 
-    setIsPageChanging(true)
-
-    requestAnimationFrame(() => {
-      setCurrentPage(page)
-      setIsPageChanging(false)
+      // Load additional pages to reach the target page (cumulative visible like before)
+      let pagesNeeded = page - currentLoaded
+      while (pagesNeeded > 0) {
+        await fetchNextPage()
+        pagesNeeded--
+      }
       window.scrollTo({ top: 300, behavior: 'smooth' })
-    })
-  }, [totalPages, isPageChanging])
+    },
+    [totalPages, isFetchingNextPage, pages.length, fetchNextPage]
+  )
 
-  // Intersection Observer for infinite scroll
+  // Intersection Observer for infinite scroll (real-time style)
   useEffect(() => {
     const sentinel = sentinelRef.current
     if (!sentinel) return
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isPageChanging) {
-          loadMore()
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage()
         }
       },
       { threshold: 0.1, rootMargin: '100px' }
@@ -121,7 +110,7 @@ export function useInfiniteProducts(categoryProp?: Category): UseInfiniteProduct
 
     observer.observe(sentinel)
     return () => observer.disconnect()
-  }, [hasMore, isPageChanging, loadMore])
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage])
 
   return {
     visibleProducts,
@@ -129,10 +118,11 @@ export function useInfiniteProducts(categoryProp?: Category): UseInfiniteProduct
     currentPage,
     totalPages,
     hasMore,
-    isLoading: isGlobalLoading,
-    isFetching: isGlobalFetching || isPageChanging,
+    isLoading,
+    isFetching: isFetching || isFetchingNextPage,
     sentinelRef,
     goToPage,
     loadMore,
+    isFetchingNextPage,
   }
 }

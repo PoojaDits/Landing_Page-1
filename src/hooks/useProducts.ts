@@ -1,8 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { fetchProducts } from '@/lib/api'
 import { useProductStore } from '@/store/useProductStore'
-import { useMemo } from 'react'
-import type { Product, Category } from '@/types'
+import type { Category } from '@/types'
 
 export const useProducts = (categoryProp?: Category) => {
   const { selectedCategory, searchQuery, sortBy } = useProductStore()
@@ -15,42 +14,20 @@ export const useProducts = (categoryProp?: Category) => {
     isFetching,
     error,
   } = useQuery({
-    queryKey: ['products'],
-    queryFn: fetchProducts,
-    // These are now inherited from the global QueryClient, but can be overridden per query
+    queryKey: ['products', activeCategory, searchQuery, sortBy],
+    queryFn: () =>
+      fetchProducts({
+        category: activeCategory !== 'All' ? activeCategory : undefined,
+        search: searchQuery || undefined,
+        sortBy,
+      }),
   })
 
-  const filteredProducts = useMemo(() => {
-    let result = [...products]
-
-    if (activeCategory !== 'All') {
-      result = result.filter((p: Product) => p.category === activeCategory)
-    }
-
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase()
-      result = result.filter((p: Product) =>
-        p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
-      )
-    }
-
-    if (sortBy !== 'none') {
-      result.sort((a: Product, b: Product) => {
-        if (sortBy === 'price-asc') return a.price - b.price
-        if (sortBy === 'price-desc') return b.price - a.price
-        if (sortBy === 'rating') return b.rating - a.rating
-        return 0
-      })
-    }
-
-    return result
-  }, [products, activeCategory, searchQuery, sortBy])
-
   return {
-    products: filteredProducts,
+    products,
     isLoading,
     isFetching,
     error,
-    rawProducts: products, // in case you need unfiltered data
+    rawProducts: products,
   }
 }
