@@ -47,8 +47,20 @@ const Cart: React.FC<CartProps> = ({
                 key={item.id}
                 className="flex gap-2.5 py-2.5 border-b border-[#eee] items-center"
               >
-                <div className="text-2xl bg-[#f5f5f5] w-11 h-11 flex items-center justify-center rounded-lg">
-                  {item.emoji}
+                <div className="w-11 h-11 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
+                  {item.image ? (
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : item.emoji ? (
+                    <div className="w-full h-full flex items-center justify-center text-2xl">
+                      {item.emoji}
+                    </div>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-xl text-gray-400">📦</div>
+                  )}
                 </div>
                 <div className="flex-1">
                   <p className="text-[0.85rem] font-bold m-0">{item.name}</p>
@@ -94,7 +106,7 @@ const Cart: React.FC<CartProps> = ({
               <span>Total</span>
               <span className="text-[#e94560]">${total}</span>
             </div>
-            <button className="w-full p-3 bg-gradient-to-br from-[#e94560] to-[#f093fb] text-white border-none rounded-lg font-bold cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all">
+            <button className="w-full p-3 font-semibold text-white border-0 rounded-3xl bg-[#e94560] hover:bg-[#c73652] shadow-sm active:scale-[0.985] transition-all cursor-pointer">
               Proceed to Checkout →
             </button>
           </div>

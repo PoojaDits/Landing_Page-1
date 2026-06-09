@@ -1,6 +1,9 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import type { ReactNode } from 'react'
+import { FaShoppingCart } from 'react-icons/fa'
+import { Badge } from '@/components/ui/badge'
+import { useCartStore } from '@/store/useCartStore'
 
 interface DashboardLink {
   label: string
@@ -21,9 +24,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
   handleLogout,
 }) => {
+  const totalItems = useCartStore((state) => state.totalItems)
+  const toggleCart = useCartStore((state) => state.toggleCart)
   return (
-    <div className="min-h-screen flex bg-[#0b1122] text-slate-100">
-      <aside className="hidden w-72 shrink-0 flex-col border-r border-white/10 bg-[#111827] md:flex">
+    <div className="h-screen flex overflow-hidden bg-[#0b1122] text-slate-100">
+      <aside className="hidden w-72 shrink-0 flex-col border-r border-white/10 bg-[#111827] md:flex h-full">
         <div className="px-6 py-6 border-b border-white/10">
           <p className="text-xs uppercase tracking-[0.32em] text-slate-400">
             Dashboard
@@ -50,15 +55,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </NavLink>
           ))}
         </nav>
-
-        <div className="px-6 py-4 border-t border-white/10">
-          <button
-            onClick={handleLogout}
-            className="w-full rounded-3xl bg-rose-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-rose-400"
-          >
-            Logout
-          </button>
-        </div>
       </aside>
 
       <div className="flex flex-1 flex-col">
@@ -71,12 +67,27 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               Welcome back
             </h1>
           </div>
-          <button
-            onClick={handleLogout}
-            className="inline-flex items-center justify-center rounded-3xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-400"
-          >
-            Logout
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={toggleCart}
+              className="relative inline-flex items-center justify-center rounded-3xl bg-white/10 hover:bg-white/20 px-3 py-2 text-sm font-semibold text-white transition"
+            >
+              <FaShoppingCart size={18} />
+              {totalItems > 0 && (
+                <Badge
+                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-[10px] bg-[#e94560] text-white"
+                >
+                  {totalItems}
+                </Badge>
+              )}
+            </button>
+            <button
+              onClick={handleLogout}
+              className="inline-flex items-center justify-center rounded-3xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-400"
+            >
+              Logout
+            </button>
+          </div>
         </header>
 
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
