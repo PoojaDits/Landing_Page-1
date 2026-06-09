@@ -199,11 +199,11 @@ const ProductsManagement: React.FC = () => {
                 <p className="text-[#e94560] text-xs font-semibold uppercase tracking-wider mb-3">Editing #{p.id}</p>
 
                 <input
-                type="text"
-                value={editData.name || ''}
-                onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                placeholder="Product name"
-                className="w-full px-3 py-1.5 rounded-lg bg-white/10 text-white border border-white/20 text-sm focus:outline-none focus:border-[#e94560]"
+                  type="text"
+                  value={editData.name || ''}
+                  onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                  placeholder="Product name"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white/10 text-white border border-white/20 text-sm focus:outline-none focus:border-[#e94560]"
                 />
 
                 <select

@@ -4,7 +4,7 @@ import {
   DASHBOARD_PATHS,
   ROLES,
 } from '@/lib/role'
-import { useAuthStore } from '@/store/useAuthStore'
+import { useAuthStore, useAuthHydrated } from '@/store/useAuthStore'
 import type { PrivateRouteProps, RoleRouteProps } from '@/types'
 
 export default function PrivateRoute({
@@ -13,6 +13,14 @@ export default function PrivateRoute({
 }: PrivateRouteProps): React.ReactNode {
   const location = useLocation()
   const { isAuthenticated, user } = useAuthStore()
+  const hydrated = useAuthHydrated()
+
+  // Wait for persist rehydration before making auth decisions.
+  // This prevents the guard from redirecting to /login on initial render/refresh
+  // before the stored auth state has loaded from localStorage.
+  if (!hydrated) {
+    return null
+  }
 
   if (!isAuthenticated || !user) {
     return <Navigate to="/login" state={{ from: location }} replace />

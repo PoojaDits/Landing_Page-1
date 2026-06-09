@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { useState, useEffect } from 'react';
 import type { User } from '@/types';
 
 interface AuthState {
@@ -44,3 +45,22 @@ export const useAuthStore = create<AuthStore>()(
     }
   )
 );
+
+// Hook to safely wait for Zustand persist rehydration (prevents premature redirects on first render / refresh)
+export function useAuthHydrated() {
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    const unsub = useAuthStore.persist.onFinishHydration(() => {
+      setHydrated(true);
+    });
+
+    // If already hydrated (sync case), set immediately
+    setHydrated(useAuthStore.persist.hasHydrated());
+
+    return unsub;
+  }, []);
+
+  return hydrated;
+}
+

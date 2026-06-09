@@ -63,10 +63,10 @@ const CustomerDashboard: React.FC = () => {
               Open wishlist
             </Link>
             <Link
-              to="/customer/settings"
+              to="/customer/profile"
               className="block rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
             >
-              Account settings
+              My Profile
             </Link>
           </div>
         </div>

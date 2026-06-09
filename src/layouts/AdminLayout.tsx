@@ -12,7 +12,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ handleLogout }) => {
     { label: 'Dashboard', path: '/admin/dashboard', icon: <FaTachometerAlt /> },
     { label: 'Analytics', path: '/admin/analytics', icon: <FaChartLine /> },
     { label: 'Products', path: '/admin/products', icon: <FaBoxes /> },
-    { label: 'Users', path: '/admin/users', icon: <FaUsers /> },
+    { label: 'Customers', path: '/admin/customers', icon: <FaUsers /> },
   ]
 
   return (

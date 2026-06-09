@@ -30,6 +30,8 @@ import SuperAdminLayout from '@/layouts/SuperAdminLayout'
 import CustomerDashboard from '@/pages/dashboard/CustomerDashboard'
 import AdminDashboard from '@/pages/dashboard/AdminDashboard'
 import SuperAdminDashboard from '@/pages/dashboard/SuperAdminDashboard'
+import CustomerProfile from '@/pages/dashboard/CustomerProfile'
+import CustomerDeals from '@/pages/dashboard/CustomerDeals'
 import AllStores from '@/pages/dashboard/AllStores'
 import StoreDetails from '@/pages/dashboard/StoreDetails'
 import AllUsers from '@/pages/dashboard/Users'
@@ -45,7 +47,7 @@ import {
   stopImpersonation,
 } from '@/lib/role'
 import { useCartStore } from '@/store/useCartStore'
-import { useAuthStore } from '@/store/useAuthStore'
+import { useAuthStore, useAuthHydrated } from '@/store/useAuthStore'
 import { useProductStore } from '@/store/useProductStore'
 import type { Category } from '@/types'
 
@@ -61,6 +63,12 @@ const ProductsPage: React.FC = () => {
 }
 
 function RoleRedirect(): ReactNode {
+  const hydrated = useAuthHydrated()
+
+  if (!hydrated) {
+    return null
+  }
+
   return (
     <Navigate
       to={isLoggedIn() ? getDashboardPath() : '/login'}
@@ -86,6 +94,20 @@ const HomePage: React.FC = () => (
   </>
 )
 
+function CatchAllRedirect(): ReactNode {
+  const hydrated = useAuthHydrated()
+
+  if (!hydrated) {
+    return null
+  }
+
+  return isLoggedIn() ? (
+    <Navigate to={getDashboardPath()} replace />
+  ) : (
+    <Navigate to="/login" replace />
+  )
+}
+
 const ImpersonationBanner: React.FC = () => {
   const navigate = useNavigate()
   if (!isImpersonating()) return null
@@ -97,7 +119,7 @@ const ImpersonationBanner: React.FC = () => {
   return (
     <div className="bg-amber-500 text-black text-sm font-medium px-4 py-2 flex items-center justify-between sticky top-0 z-[100]">
       <span>
-        🔒 You are impersonating as <strong>{admin?.name}</strong>. Actions are logged.
+        🔒 You are impersonating as <strong>{admin?.firstName ? `${admin.firstName} ${admin.lastName || ''}`.trim() : admin?.name || 'User'}</strong>. Actions are logged.
       </span>
       <button
         onClick={handleStop}
@@ -121,6 +143,22 @@ export default function App(): ReactNode {
   useEffect(() => {
     // Force auth check on route change if needed
     // The useAuthStore persist middleware handles the initial load
+
+    // Migrate old localStorage auth (from previous implementation) to new Zustand store
+    const { isAuthenticated, setAuth } = useAuthStore.getState()
+    if (!isAuthenticated) {
+      const token = localStorage.getItem('myToken')
+      const savedUser = localStorage.getItem('myUser')
+      if (token && savedUser) {
+        try {
+          const user = JSON.parse(savedUser)
+          setAuth(user, token)
+          // Optionally clear old keys after migration (they are also cleared on logout)
+        } catch {
+          // ignore parse errors
+        }
+      }
+    }
   }, [location])
 
   const handleLogout = (): void => {
@@ -159,10 +197,11 @@ export default function App(): ReactNode {
           <Route index element={<Navigate to="/customer/dashboard" replace />} />
           <Route path="dashboard" element={<CustomerDashboard />} />
           <Route path="home" element={<HomePage />} />
+          <Route path="profile" element={<CustomerProfile />} />
           <Route path="products" element={<ProductsPage />} />
           <Route path="products/:category" element={<ProductsPage />} />
           <Route path="product/:id" element={<ProductDetail />} />
-          <Route path="deals" element={<Deals />} />
+          <Route path="deals" element={<CustomerDeals />} />
           <Route path="contact" element={<Contact />} />
           <Route path="orders" element={<PlaceholderPage title="My Orders" />} />
           <Route path="wishlist" element={<PlaceholderPage title="My Wishlist" />} />
@@ -230,16 +269,7 @@ export default function App(): ReactNode {
         </Route>
 
         {/* Catch-all */}
-        <Route
-          path="*"
-          element={
-            isLoggedIn() ? (
-              <Navigate to={getDashboardPath()} replace />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
+        <Route path="*" element={<CatchAllRedirect />} />
       </Routes>
 
       {isCartOpen && (
