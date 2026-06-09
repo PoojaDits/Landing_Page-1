@@ -1,5 +1,3 @@
-
-
 import type { Role } from './common'
 
 export interface User {

@@ -45,8 +45,6 @@ export const useAuthStore = create<AuthStore>()(
     }
   )
 );
-
-// Hook to safely wait for Zustand persist rehydration (prevents premature redirects on first render / refresh)
 export function useAuthHydrated() {
   const [hydrated, setHydrated] = useState(false);
 
@@ -55,7 +53,7 @@ export function useAuthHydrated() {
       setHydrated(true);
     });
 
-    // If already hydrated (sync case), set immediately
+
     setHydrated(useAuthStore.persist.hasHydrated());
 
     return unsub;

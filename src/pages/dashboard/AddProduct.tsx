@@ -42,7 +42,7 @@ const AddProduct: React.FC = () => {
       toast.success('Product added')
       navigate('/admin/products')
     } catch (err) {
-      
+
       console.error(err)
       toast.error('Could not add product')
     }
@@ -71,11 +71,6 @@ const AddProduct: React.FC = () => {
         <label className="block text-sm text-gray-300">Price</label>
         <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} className="w-full p-2 rounded mb-3 text-black" />
 
-        {/* <label className="block text-sm text-gray-300">Rating</label>
-        <input type="number" value={rating} onChange={(e) => setRating(e.target.value)} min={0} max={5} className="w-full p-2 rounded mb-3 text-black" />
-
-        <label className="block text-sm text-gray-300">Reviews</label>
-        <input type="number" value={reviews} onChange={(e) => setReviews(e.target.value)} className="w-full p-2 rounded mb-3 text-black" /> */}
 
         <label className="block text-sm text-gray-300">Description</label>
         <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full p-2 rounded mb-3 text-black" />

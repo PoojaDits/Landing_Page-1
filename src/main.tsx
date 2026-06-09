@@ -4,6 +4,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools' // optional
 import App from './App'
 import './index.css'
+import { useAuthStore } from '@/store/useAuthStore'
+import { setGraphQLAuthToken } from '@/lib/graphql/client'
+
+setGraphQLAuthToken(useAuthStore.getState().token)
+useAuthStore.subscribe((state) => setGraphQLAuthToken(state.token))
 
 const queryClient = new QueryClient({
   defaultOptions: {

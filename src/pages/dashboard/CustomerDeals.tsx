@@ -4,8 +4,7 @@ import { useProducts } from '@/hooks/useProducts'
 import { useProductStore } from '@/store/useProductStore'
 
 const CustomerDeals: React.FC = () => {
-    // Reset product store filters so Deals page is independent of Products page state
-    // (prevents category/search/sort from one page affecting the other)
+
     useEffect(() => {
         const { setCategory, setSearchQuery, setSortBy } = useProductStore.getState()
         setCategory('All')
@@ -13,16 +12,15 @@ const CustomerDeals: React.FC = () => {
         setSortBy('none')
     }, [])
 
-    // Use the shared React Query hook — gets caching, loading states, etc. for free
-    // Force 'All' to ensure we get full list before filtering for deals
+
     const { products: allProducts, isLoading, isFetching, error } = useProducts('All')
 
-    // Client-side filter for deals only (products with discount)
+
     const deals = allProducts.filter(
         (p) => p.originalPrice && p.originalPrice > p.price
     )
 
-    // Show fallback only if we have no data at all (offline / first load failure)
+
     const displayDeals = deals.length > 0 ? deals : allProducts.slice(0, 8)
 
     if (error) {

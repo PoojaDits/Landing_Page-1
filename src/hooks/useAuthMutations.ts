@@ -14,7 +14,6 @@ export const useLogin = () => {
     mutationFn: loginUser,
     onSuccess: ({ user, token }) => {
       setAuth(user, token)
-      // Invalidate products so fresh data loads for the new user session
       queryClient.invalidateQueries({ queryKey: ['products'] })
       toast.success('Welcome back!')
       navigate(getDashboardPath())
@@ -32,7 +31,6 @@ export const useSignup = () => {
   return useMutation({
     mutationFn: signupUser,
     onSuccess: () => {
-      // Invalidate so new user data (if any) is fresh
       queryClient.invalidateQueries({ queryKey: ['products'] })
       toast.success('Account created! Please log in.')
       navigate('/login')

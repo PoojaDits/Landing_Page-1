@@ -1,6 +1,6 @@
 import React from 'react'
 
-interface HeroProps {}
+interface HeroProps { }
 
 const Hero: React.FC<HeroProps> = () => {
   return (

@@ -22,7 +22,6 @@ const CustomerProfile: React.FC = () => {
     }
 
     const startEditing = () => {
-        // Sync latest data from store in case it changed elsewhere
         setFormData({
             firstName: user?.firstName || '',
             lastName: user?.lastName || '',
@@ -33,7 +32,7 @@ const CustomerProfile: React.FC = () => {
 
     const handleCancel = () => {
         setIsEditing(false)
-        // Reset to current user data
+
         setFormData({
             firstName: user?.firstName || '',
             lastName: user?.lastName || '',
@@ -47,7 +46,6 @@ const CustomerProfile: React.FC = () => {
         setIsSaving(true)
 
         try {
-            // Simulate API call
             await new Promise((resolve) => setTimeout(resolve, 600))
 
             const updatedUser = {
@@ -57,7 +55,7 @@ const CustomerProfile: React.FC = () => {
                 email: formData.email,
             }
 
-            // Update the auth store so navbar and other places reflect changes
+
             if (token) {
                 setAuth(updatedUser, token)
             }
@@ -81,7 +79,7 @@ const CustomerProfile: React.FC = () => {
 
     return (
         <div className="max-w-5xl mx-auto p-6 sm:p-8">
-            {/* Nice header section like other dashboard pages */}
+
             <div className="mb-8">
                 <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">Account</p>
                 <h1 className="mt-2 text-4xl font-semibold text-white">My Profile</h1>
@@ -91,7 +89,7 @@ const CustomerProfile: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                {/* Left: Avatar + Summary Card */}
+
                 <div className="lg:col-span-5">
                     <div className="bg-slate-950/90 rounded-3xl border border-white/10 p-8 h-full flex flex-col">
                         <div className="flex flex-col items-center text-center flex-1">
@@ -125,7 +123,7 @@ const CustomerProfile: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Right: Form or Read-only view */}
+
                 <div className="lg:col-span-7">
                     <div className="bg-slate-950/90 rounded-3xl border border-white/10 p-8">
                         <div className="flex items-center justify-between mb-6">
@@ -141,7 +139,7 @@ const CustomerProfile: React.FC = () => {
                         </div>
 
                         {isEditing ? (
-                            // EDIT MODE
+
                             <>
                                 <div className="space-y-5">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -205,7 +203,7 @@ const CustomerProfile: React.FC = () => {
                                 </div>
                             </>
                         ) : (
-                            // VIEW MODE
+
                             <div className="space-y-6 text-sm">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                     <div>
@@ -237,7 +235,7 @@ const CustomerProfile: React.FC = () => {
                 </div>
             </div>
 
-            {/* Security / Preferences */}
+
             <div className="mt-6 bg-slate-950/70 rounded-3xl border border-white/10 p-6">
                 <h4 className="font-medium text-white mb-4">Security & Preferences</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-sm text-gray-300">

@@ -1,6 +1,3 @@
-/**
- * Cart Types
- */
 
 import type { CartProduct } from './product';
 
@@ -19,4 +16,4 @@ export interface CartActions {
   clearCart: () => void;
 }
 
-export interface UseCartReturn extends CartState, CartActions {}
+export interface UseCartReturn extends CartState, CartActions { }

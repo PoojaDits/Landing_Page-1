@@ -1,4 +1,3 @@
-// src/store/useProductStore.ts
 import { create } from 'zustand'
 import type { Category } from '@/types'
 

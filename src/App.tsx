@@ -141,10 +141,7 @@ export default function App(): ReactNode {
   const clearAuth = useAuthStore((state) => state.clearAuth)
 
   useEffect(() => {
-    // Force auth check on route change if needed
-    // The useAuthStore persist middleware handles the initial load
 
-    // Migrate old localStorage auth (from previous implementation) to new Zustand store
     const { isAuthenticated, setAuth } = useAuthStore.getState()
     if (!isAuthenticated) {
       const token = localStorage.getItem('myToken')
@@ -153,9 +150,9 @@ export default function App(): ReactNode {
         try {
           const user = JSON.parse(savedUser)
           setAuth(user, token)
-          // Optionally clear old keys after migration (they are also cleared on logout)
+
         } catch {
-          // ignore parse errors
+
         }
       }
     }

@@ -15,9 +15,6 @@ export default function PrivateRoute({
   const { isAuthenticated, user } = useAuthStore()
   const hydrated = useAuthHydrated()
 
-  // Wait for persist rehydration before making auth decisions.
-  // This prevents the guard from redirecting to /login on initial render/refresh
-  // before the stored auth state has loaded from localStorage.
   if (!hydrated) {
     return null
   }

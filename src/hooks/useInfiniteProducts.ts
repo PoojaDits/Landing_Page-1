@@ -27,9 +27,7 @@ export function useInfiniteProducts(categoryProp?: Category): UseInfiniteProduct
 
   const activeCategory = categoryProp || selectedCategory
 
-  // Different chunk sizes:
-  // - "All": 12 per page (used with numbered pagination, strict per-page view)
-  // - Specific categories: 6 per load for infinite scroll (first 6, then +6 on scroll)
+
   const isAll = activeCategory === 'All'
   const chunkSize = isAll ? 12 : 6
 
@@ -61,8 +59,6 @@ export function useInfiniteProducts(categoryProp?: Category): UseInfiniteProduct
   const currentPage = pages.length
   const hasMore = !!hasNextPage
 
-  // allFiltered kept for backward compatibility in ProductGrid (only .length and length===0 used)
-  // We use a length-correct dummy array (no full data fetched on client)
   const allFiltered = Array.from({ length: total }, () => ({ id: 0 } as Product))
 
   const sentinelRef = useRef<HTMLDivElement>(null)
@@ -83,7 +79,6 @@ export function useInfiniteProducts(categoryProp?: Category): UseInfiniteProduct
         return
       }
 
-      // Load additional pages to reach the target page (cumulative visible like before)
       let pagesNeeded = page - currentLoaded
       while (pagesNeeded > 0) {
         await fetchNextPage()
@@ -94,7 +89,7 @@ export function useInfiniteProducts(categoryProp?: Category): UseInfiniteProduct
     [totalPages, isFetchingNextPage, pages.length, fetchNextPage]
   )
 
-  // Intersection Observer for infinite scroll (real-time style)
+
   useEffect(() => {
     const sentinel = sentinelRef.current
     if (!sentinel) return

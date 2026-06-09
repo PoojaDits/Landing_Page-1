@@ -51,7 +51,7 @@ export default function Signup(): React.ReactNode {
               name="firstName"
               type="text"
               placeholder="John"
-              // @ts-ignore
+
               value={formData.firstName || ''}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -74,7 +74,7 @@ export default function Signup(): React.ReactNode {
               name="lastName"
               type="text"
               placeholder="Doe"
-              // @ts-ignore
+
               value={formData.lastName || ''}
               onChange={handleChange}
               onBlur={handleBlur}

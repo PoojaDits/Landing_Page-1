@@ -282,8 +282,7 @@ const ProductGrid: React.FC = () => {
             }
           </div>
 
-          {/* Sentinel for infinite scroll is only active for specific categories (chunks of 6).
-              On "All" we use strict 12-per-page via the numbered Pagination (no auto "further" loading). */}
+
           {activeCategory !== 'All' && (
             <div ref={sentinelRef} className="h-10 mt-4 flex items-center justify-center">
               {isFetchingNextPage && (
@@ -305,9 +304,7 @@ const ProductGrid: React.FC = () => {
             </div>
           )}
 
-          {/* Numbered Pagination only for "All" (12 per page).
-              Uses local viewedPage so you can click any number (1, 2, 3...) and go back/forward.
-              For Electronics etc. (infinite scroll) it is completely hidden. */}
+
           {activeCategory === 'All' && (
             <Pagination
               currentPage={viewedPage}
