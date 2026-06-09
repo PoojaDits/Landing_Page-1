@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useProductStore } from '@/store/useProductStore';
+import { useQuery } from '@tanstack/react-query'
+import { fetchProducts } from '@/lib/api'
 import type { Product, Category } from '@/types'
 
 const PAGE_SIZE = 6
@@ -18,13 +20,15 @@ export interface UseInfiniteProductsReturn {
 
 export function useInfiniteProducts(categoryProp?: Category): UseInfiniteProductsReturn {
   const {
-    products,
     selectedCategory,
     searchQuery,
     sortBy,
-    isLoading: isGlobalLoading,
-    fetchProducts
   } = useProductStore()
+
+  const { data: products = [], isLoading: isGlobalLoading } = useQuery({
+    queryKey: ['products'],
+    queryFn: fetchProducts,
+  })
 
   const [currentPage, setCurrentPage] = useState(1)
   const [visibleProducts, setVisibleProducts] = useState<Product[]>([])
@@ -32,10 +36,6 @@ export function useInfiniteProducts(categoryProp?: Category): UseInfiniteProduct
   const sentinelRef = useRef<HTMLDivElement>(null)
 
   const activeCategory = categoryProp || selectedCategory
-
-  useEffect(() => {
-    fetchProducts()
-  }, [fetchProducts])
 
   const allFiltered = useMemo(() => {
     let result = [...products];
