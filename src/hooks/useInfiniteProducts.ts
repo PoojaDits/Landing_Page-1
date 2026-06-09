@@ -13,7 +13,7 @@ export interface UseInfiniteProductsReturn {
   isLoading: boolean
   isFetching: boolean
   sentinelRef: React.RefObject<HTMLDivElement | null>
-  goToPage: (page: number) => void
+  goToPage: (page: number) => Promise<void>
   loadMore: () => void
   isFetchingNextPage?: boolean
 }

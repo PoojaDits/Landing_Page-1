@@ -144,9 +144,19 @@ const ProductGrid: React.FC = () => {
 
   const activeCategory = normaliseCategory(category || selectedCategory)
 
+  // Separate "viewed page" for the strict "All" 12-per-page pagination.
+  // This is independent of the hook's loaded chunks so we can freely click
+  // any page number (1,2,3...) and go back/forward without the "only next works" bug.
+  const [viewedPage, setViewedPage] = useState(1)
+
   useEffect(() => {
     setGlobalCategory(normaliseCategory(category))
   }, [category, setGlobalCategory])
+
+  // Reset viewed page when category or filters change (important for "All" pagination)
+  useEffect(() => {
+    setViewedPage(1)
+  }, [activeCategory, searchQuery, sortBy])
 
   const basePath = location.pathname.startsWith('/customer') ? '/customer' : ''
 
@@ -156,10 +166,23 @@ const ProductGrid: React.FC = () => {
     else navigate(`${basePath}/products/${cat}`)
   }
 
+  // Wrapper so that for "All" we can freely navigate to any page number (including previous)
+  // by using a local viewedPage state + ensuring data is loaded if jumping ahead.
+  const handlePageChange = (page: number) => {
+    if (activeCategory === 'All') {
+      // goToPage will fetch more chunks if needed (forward jump)
+      // then we set the viewed page so the slice shows the correct 12 items.
+      goToPage(page).then(() => {
+        setViewedPage(page)
+      })
+    } else {
+      goToPage(page)
+    }
+  }
+
   const {
     visibleProducts,
     allFiltered,
-    currentPage,
     totalPages,
     hasMore,
     isLoading,
@@ -169,11 +192,11 @@ const ProductGrid: React.FC = () => {
   } = useInfiniteProducts(activeCategory)
 
   // Strict 12 products per page for "All".
-  // We use server-side pagination (PAGE_SIZE=12) + the numbered Pagination.
-  // For "All" we render *only* the 12 items belonging to the current page.
-  // Specific categories keep cumulative infinite-scroll style.
+  // We use server-side pagination + the numbered Pagination.
+  // For "All" we render *only* the 12 items belonging to the *viewed* page.
+  // Specific categories keep cumulative infinite-scroll style (no pagination).
   const PAGE_SIZE_DISPLAY = 12;
-  const startIdx = activeCategory === 'All' ? (currentPage - 1) * PAGE_SIZE_DISPLAY : 0;
+  const startIdx = activeCategory === 'All' ? (viewedPage - 1) * PAGE_SIZE_DISPLAY : 0;
   const endIdx = activeCategory === 'All' ? startIdx + PAGE_SIZE_DISPLAY : visibleProducts.length;
   const productsToDisplay = visibleProducts.slice(startIdx, endIdx);
 
@@ -216,7 +239,7 @@ const ProductGrid: React.FC = () => {
           <>
             Showing <span className="text-[#e94560] font-semibold">{startIdx + 1}</span>–<span className="text-[#e94560] font-semibold">{Math.min(endIdx, allFiltered.length)}</span> of{' '}
             <span className="font-semibold text-gray-400">{allFiltered.length}</span> products
-            <span className="text-gray-500"> (Page {currentPage})</span>
+            <span className="text-gray-500"> (Page {viewedPage})</span>
           </>
         ) : (
           <>
@@ -282,10 +305,15 @@ const ProductGrid: React.FC = () => {
             </div>
           )}
 
-          {/* Numbered Pagination only for "All" (12 per page, no auto advance on scroll).
-              For infinite scroll categories, we hide it so scrolling does not "go to next page by itself". */}
+          {/* Numbered Pagination only for "All" (12 per page).
+              Uses local viewedPage so you can click any number (1, 2, 3...) and go back/forward.
+              For Electronics etc. (infinite scroll) it is completely hidden. */}
           {activeCategory === 'All' && (
-            <Pagination currentPage={currentPage} totalPages={totalPages} onGoTo={goToPage} />
+            <Pagination
+              currentPage={viewedPage}
+              totalPages={totalPages}
+              onGoTo={handlePageChange}
+            />
           )}
         </>
       )}
