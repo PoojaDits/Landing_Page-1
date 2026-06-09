@@ -1,5 +1,6 @@
 import React from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useProductStore } from '@/store/useProductStore'
 import type { Category } from '@/types'
 
 interface CategoryData {
@@ -24,10 +25,14 @@ interface CategoriesProps {
 const Categories: React.FC<CategoriesProps> = ({ setSelectedCategory }) => {
   const navigate = useNavigate()
   const location = useLocation()
+  const setGlobalCategory = useProductStore((state) => state.setCategory)
 
   const basePath = location.pathname.startsWith('/customer') ? '/customer' : ''
 
   const handleCategoryClick = (categoryName: Category): void => {
+    // Update global Zustand store
+    setGlobalCategory(categoryName)
+
     if (typeof setSelectedCategory === 'function') {
       setSelectedCategory(categoryName)
     }

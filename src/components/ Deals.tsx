@@ -3,7 +3,7 @@ import ProductCard from '@/components/ProductCard'
 import { useProducts } from '@/hooks/useProducts'
 import { useProductStore } from '@/store/useProductStore'
 
-const CustomerDeals: React.FC = () => {
+const Deals: React.FC = () => {
     // Reset product store filters so Deals page is independent of Products page state
     // (prevents category/search/sort from one page affecting the other)
     useEffect(() => {
@@ -71,4 +71,4 @@ const CustomerDeals: React.FC = () => {
     )
 }
 
-export default CustomerDeals;
+export { Deals }
