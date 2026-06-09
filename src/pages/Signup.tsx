@@ -1,129 +1,156 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
-import { useProductStore } from '@/store/useProductStore';
-import { useQuery } from '@tanstack/react-query'
-import { fetchProducts } from '@/lib/api'
-import type { Product, Category } from '@/types'
+import React from 'react'
+import { useSignupForm } from '@/hooks/useAppHooks'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { cn } from '@/lib/utils'
+import { Link, useNavigate } from 'react-router-dom'
+import { isLoggedIn, getDashboardPath } from '@/lib/role'
+import { useEffect } from 'react'
 
-const PAGE_SIZE = 6
-
-export interface UseInfiniteProductsReturn {
-  visibleProducts: Product[]
-  allFiltered: Product[]
-  currentPage: number
-  totalPages: number
-  hasMore: boolean
-  isLoading: boolean
-  sentinelRef: React.RefObject<HTMLDivElement | null>
-  goToPage: (page: number) => void
-  loadMore: () => void
-}
-
-export function useInfiniteProducts(categoryProp?: Category): UseInfiniteProductsReturn {
-  const {
-    selectedCategory,
-    searchQuery,
-    sortBy,
-  } = useProductStore()
-
-  const { data: products = [], isLoading: isGlobalLoading } = useQuery({
-    queryKey: ['products'],
-    queryFn: fetchProducts,
-  })
-
-  const [currentPage, setCurrentPage] = useState(1)
-  const [visibleProducts, setVisibleProducts] = useState<Product[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const sentinelRef = useRef<HTMLDivElement>(null)
-
-  const activeCategory = categoryProp || selectedCategory
-
-  const allFiltered = useMemo(() => {
-    let result = [...products];
-
-    // 1. Filter by Category
-    if (activeCategory !== 'All') {
-      result = result.filter((p) => p.category === activeCategory);
-    }
-
-    // 2. Filter by Search Query
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter((p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q)
-      );
-    }
-
-    // 3. Sort
-    if (sortBy !== 'none') {
-      result.sort((a, b) => {
-        if (sortBy === 'price-asc') return a.price - b.price;
-        if (sortBy === 'price-desc') return b.price - a.price;
-        if (sortBy === 'rating') return b.rating - a.rating;
-        return 0;
-      });
-    }
-
-    return result;
-  }, [activeCategory, products, searchQuery, sortBy]);
-
-  const totalPages = Math.ceil(allFiltered.length / PAGE_SIZE)
-  const hasMore = currentPage < totalPages
+export default function Signup(): React.ReactNode {
+  const navigate = useNavigate()
+  const { formData, errors, mainError, loading, handleChange, handleBlur, handleSubmit } = useSignupForm()
 
   useEffect(() => {
-    setCurrentPage(1)
-    setVisibleProducts(allFiltered.slice(0, PAGE_SIZE))
-  }, [allFiltered])
+    if (isLoggedIn()) navigate(getDashboardPath(), { replace: true })
+  }, [navigate])
 
-  const loadMore = useCallback(() => {
-    if (isLoading || !hasMore) return
-    setIsLoading(true)
-    setTimeout(() => {
-      const nextPage = currentPage + 1
-      setVisibleProducts(allFiltered.slice(0, nextPage * PAGE_SIZE))
-      setCurrentPage(nextPage)
-      setIsLoading(false)
-    }, 500)
-  }, [isLoading, hasMore, currentPage, allFiltered])
+  return (
+    <div
+      style={{
+        background:
+          'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
+      }}
+      className="min-h-[80vh] flex items-center justify-center py-12 px-4"
+    >
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-white">Create Account</h1>
+          <p className="text-gray-400 mt-2">Join ShopWave today</p>
+        </div>
+        {mainError && (
+          <div
+            className="mb-6 p-4 rounded-xl text-sm"
+            style={{
+              background: 'rgba(233,69,96,0.1)',
+              border: '1px solid rgba(233,69,96,0.2)',
+              color: '#e94560',
+            }}
+          >
+            {mainError}
+          </div>
+        )}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <Label htmlFor="firstName" className="text-gray-300">
+              First Name
+            </Label>
+            <Input
+              id="firstName"
+              name="firstName"
+              type="text"
+              placeholder="John"
+              // @ts-ignore
+              value={formData.firstName || ''}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              className={cn(
+                'h-12 bg-white/5 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-[#e94560]',
+                errors.firstName && 'border-[#e94560]'
+              )}
+            />
+            {errors.firstName && (
+              <p className="text-[#e94560] text-sm mt-1">{errors.firstName}</p>
+            )}
+          </div>
 
-  const goToPage = useCallback(
-    (page: number) => {
-      if (page < 1 || page > totalPages) return
-      setIsLoading(true)
-      setTimeout(() => {
-        setCurrentPage(page)
-        setVisibleProducts(allFiltered.slice(0, page * PAGE_SIZE))
-        setIsLoading(false)
-        window.scrollTo({ top: 400, behavior: 'smooth' })
-      }, 400)
-    },
-    [totalPages, allFiltered]
+          <div>
+            <Label htmlFor="lastName" className="text-gray-300">
+              Last Name
+            </Label>
+            <Input
+              id="lastName"
+              name="lastName"
+              type="text"
+              placeholder="Doe"
+              // @ts-ignore
+              value={formData.lastName || ''}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              className={cn(
+                'h-12 bg-white/5 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-[#e94560]',
+                errors.lastName && 'border-[#e94560]'
+              )}
+            />
+            {errors.lastName && (
+              <p className="text-[#e94560] text-sm mt-1">{errors.lastName}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="email" className="text-gray-300">
+              Email
+            </Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="you@example.com"
+              value={formData.email}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              className={cn(
+                'h-12 bg-white/5 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-[#e94560]',
+                errors.email && 'border-[#e94560]'
+              )}
+            />
+            {errors.email && (
+              <p className="text-[#e94560] text-sm mt-1">{errors.email}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="password" className="text-gray-300">
+              Password
+            </Label>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="••••••••"
+              value={formData.password}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              className={cn(
+                'h-12 bg-white/5 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-[#e94560]',
+                errors.password && 'border-[#e94560]'
+              )}
+            />
+            {errors.password && (
+              <p className="text-[#e94560] text-sm mt-1">{errors.password}</p>
+            )}
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full h-12 text-base font-semibold text-white border-0"
+            disabled={loading}
+            style={{
+              background: 'linear-gradient(135deg, #e94560, #f85c76)',
+              boxShadow: '0 4px 20px rgba(233,69,96,0.4)',
+            }}
+          >
+            {loading ? 'Creating Account...' : 'Sign Up'}
+          </Button>
+        </form>
+        <div className="mt-6 text-center text-sm text-gray-400">
+          Already have an account?{' '}
+          <Link to="/login" className="font-medium" style={{ color: '#e94560' }}>
+            Sign in
+          </Link>
+        </div>
+      </div>
+    </div>
   )
-
-  useEffect(() => {
-    const sentinel = sentinelRef.current
-    if (!sentinel) return
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoading) {
-          loadMore()
-        }
-      },
-      { threshold: 0.1 }
-    )
-    observer.observe(sentinel)
-    return () => observer.disconnect()
-  }, [hasMore, isLoading, loadMore])
-
-  return {
-    visibleProducts,
-    allFiltered,
-    currentPage,
-    totalPages,
-    hasMore,
-    isLoading: isGlobalLoading || isLoading,
-    sentinelRef,
-    goToPage,
-    loadMore,
-  }
 }

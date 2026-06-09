@@ -14,7 +14,7 @@ export const ROLE_LABELS: Record<Role, string> = {
 } as const
 
 export const DASHBOARD_PATHS: Record<Role, string> = {
-  [ROLES.CUSTOMER]: '/customer/home',
+  [ROLES.CUSTOMER]: '/customer/dashboard',
   [ROLES.ADMIN]: '/admin/dashboard',
   [ROLES.SUPER_ADMIN]: '/super-admin/dashboard',
 } as const

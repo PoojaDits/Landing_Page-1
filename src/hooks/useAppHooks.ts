@@ -9,7 +9,10 @@ import {
   ContactFormValues,
   validateLoginField,
   validateLoginForm,
+  validateSignupField,
+  validateSignupForm,
   LoginFormData,
+  SignupFormData,
 } from '@/validation'
 
 const API_URL = '/api'
@@ -135,4 +138,84 @@ export function useLoginForm() {
   }
 }
 
+// Signup Form Hook
+export function useSignupForm() {
+  const navigate = useNavigate()
 
+  const [formData, setFormData] = useState<SignupFormData>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+  })
+  const [errors, setErrors] = useState<FormErrors>({})
+  const [mainError, setMainError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (localStorage.getItem('myToken')) {
+      navigate('/')
+    }
+  }, [navigate])
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target
+    setFormData({ ...formData, [name]: value })
+
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: '' })
+    }
+  }
+
+  function validateField(name: string, value: string): string {
+    return validateSignupField(name, value)
+  }
+
+  function handleBlur(e: React.FocusEvent<HTMLInputElement>) {
+    const { name, value } = e.target
+    const error = validateField(name, value)
+    setErrors({ ...errors, [name]: error })
+  }
+
+  function validateForm(): boolean {
+    const newErrors = validateSignupForm(formData)
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>): Promise<void> {
+    e.preventDefault()
+    setMainError('')
+
+    if (!validateForm()) return
+
+    setLoading(true)
+    try {
+      await axios.post(`${API_URL}/users`, {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        role: 'customer',
+      })
+      navigate('/login')
+    } catch (err) {
+      const error = err as AxiosError<{ message: string }>
+      const message =
+        error.response?.data?.message || 'Signup failed. Please try again.'
+      setMainError(message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return {
+    formData,
+    errors,
+    mainError,
+    loading,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+  }
+}
