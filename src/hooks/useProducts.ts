@@ -14,7 +14,7 @@ export const useProducts = (categoryProp?: Category) => {
     isFetching,
     error,
   } = useQuery({
-    queryKey: ['products', activeCategory, searchQuery, sortBy],
+    queryKey: ['products', 'list', activeCategory, searchQuery, sortBy],
     queryFn: () =>
       fetchProducts({
         category: activeCategory !== 'All' ? activeCategory : undefined,

@@ -71,4 +71,4 @@ const CustomerDeals: React.FC = () => {
     )
 }
 
-export default CustomerDeals;
+export default CustomerDeals

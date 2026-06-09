@@ -41,7 +41,7 @@ export function useInfiniteProducts(categoryProp?: Category): UseInfiniteProduct
     isFetching,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ['products', activeCategory, searchQuery, sortBy],
+    queryKey: ['products', 'infinite', activeCategory, searchQuery, sortBy],
     queryFn: ({ pageParam = 1 }) =>
       fetchPaginatedProducts({
         page: pageParam,

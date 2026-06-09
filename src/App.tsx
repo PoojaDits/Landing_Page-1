@@ -14,6 +14,7 @@ import Categories from '@/components/Categories'
 import ProductGrid from '@/components/ProductGrid'
 import Cart from '@/components/Cart'
 import Footer from '@/components/Footer'
+import { Deals } from '@/components/ Deals'
 import Login from '@/pages/Login'
 import Signup from '@/pages/Signup'
 import Contact from '@/pages/Contact'
@@ -180,6 +181,7 @@ export default function App(): ReactNode {
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/products/:category" element={<ProductsPage />} />
           <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/deals" element={<Deals />} />
           <Route path="/contact" element={<Contact />} />
         </Route>
 
