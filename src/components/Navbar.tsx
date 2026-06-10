@@ -127,21 +127,23 @@ const Navbar: React.FC = () => {
           </DropdownMenu>
         )}
 
-        <Button
-          variant="default"
-          onClick={toggleCart}
-          className="bg-gradient-to-br from-[#e94560] to-[#f093fb] hover:opacity-90 rounded-full flex items-center gap-2 h-10 px-4 border-none"
-        >
-          <FaShoppingCart color="white" size={20} />
-          {totalItems > 0 && (
-            <Badge
-              variant="secondary"
-              className="bg-white text-[#e94560] hover:bg-white hover:text-[#e94560] rounded-full w-5 h-5 flex items-center justify-center p-0 text-[10px]"
-            >
-              {totalItems}
-            </Badge>
-          )}
-        </Button>
+        {(!user || user.role === 'customer') && (
+          <Button
+            variant="default"
+            onClick={toggleCart}
+            className="bg-gradient-to-br from-[#e94560] to-[#f093fb] hover:opacity-90 rounded-full flex items-center gap-2 h-10 px-4 border-none"
+          >
+            <FaShoppingCart color="white" size={20} />
+            {totalItems > 0 && (
+              <Badge
+                variant="secondary"
+                className="bg-white text-[#e94560] hover:bg-white hover:text-[#e94560] rounded-full w-5 h-5 flex items-center justify-center p-0 text-[10px]"
+              >
+                {totalItems}
+              </Badge>
+            )}
+          </Button>
+        )}
       </div>
     </nav>
   )
